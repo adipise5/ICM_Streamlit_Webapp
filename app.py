@@ -5,7 +5,7 @@ import numpy as np
 import joblib
 
 # Load ML models (Replace with your actual models)
-crop_model = joblib.load('models/Crop_recommendation.pkl')
+crop_model = joblib.load('models/crop_recommendation.pkl')
 yield_model = joblib.load('models/yield_prediction.pkl')
 fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
 
