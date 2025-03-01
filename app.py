@@ -26,7 +26,6 @@ st.title("🌱 Bhoomi - Integrated Crop Management System")
 
 # Sidebar Navigation
 st.sidebar.title("Navigation")
-st.sidebar.subheader("Crop Management")
 if st.sidebar.button("Crop Recommendation"):
     st.subheader("🌾 Crop Recommendation System")
     nitrogen = st.number_input("Nitrogen Level", min_value=0)
@@ -39,7 +38,6 @@ if st.sidebar.button("Crop Recommendation"):
         prediction = crop_model.predict(features)
         st.success(f"Recommended Crop: {prediction[0]}")
 
-st.sidebar.subheader("Disease Management")
 if st.sidebar.button("Identify Plant Disease"):
     st.subheader("🦠 Plant Disease Identification")
     uploaded_file = st.file_uploader("Upload Plant Image", type=["jpg", "png", "jpeg"])
@@ -48,7 +46,6 @@ if st.sidebar.button("Identify Plant Disease"):
         st.image(image, caption='Uploaded Image', use_column_width=True)
         st.success("Processing Image... (Integrate ML Model Here)")
 
-st.sidebar.subheader("Yield Prediction")
 if st.sidebar.button("Crop Yield Prediction"):
     st.subheader("📊 Crop Yield Prediction")
     area = st.number_input("Field Area (hectares)")
@@ -59,7 +56,6 @@ if st.sidebar.button("Crop Yield Prediction"):
         prediction = yield_model.predict(features)
         st.success(f"Predicted Yield: {prediction[0]} tons")
 
-st.sidebar.subheader("Weather Information")
 if st.sidebar.button("Today's Weather"):
     st.subheader("🌤️ Weather Forecast")
     zip_code = st.text_input("Enter ZIP Code")
@@ -73,7 +69,6 @@ if st.sidebar.button("Today's Weather"):
         else:
             st.error("Invalid ZIP Code or Country Code!")
 
-st.sidebar.subheader("Fertilizer Management")
 if st.sidebar.button("Fertilizer Recommendation"):
     st.subheader("🧪 Fertilizer Recommendation")
     crop = st.text_input("Enter Crop Name")
