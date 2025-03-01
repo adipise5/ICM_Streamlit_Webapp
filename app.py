@@ -25,10 +25,9 @@ st.set_page_config(page_title="Bhoomi Dashboard", layout="wide")
 st.title("🌱 Bhoomi - Integrated Crop Management System")
 
 # Sidebar Navigation
-menu = ["Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"]
-choice = st.sidebar.selectbox("Select Feature", menu)
-
-if choice == "Crop Recommendation":
+st.sidebar.title("Navigation")
+st.sidebar.subheader("Crop Management")
+if st.sidebar.button("Crop Recommendation"):
     st.subheader("🌾 Crop Recommendation System")
     nitrogen = st.number_input("Nitrogen Level", min_value=0)
     phosphorus = st.number_input("Phosphorus Level", min_value=0)
@@ -40,7 +39,8 @@ if choice == "Crop Recommendation":
         prediction = crop_model.predict(features)
         st.success(f"Recommended Crop: {prediction[0]}")
 
-elif choice == "Identify Plant Disease":
+st.sidebar.subheader("Disease Management")
+if st.sidebar.button("Identify Plant Disease"):
     st.subheader("🦠 Plant Disease Identification")
     uploaded_file = st.file_uploader("Upload Plant Image", type=["jpg", "png", "jpeg"])
     if uploaded_file is not None:
@@ -48,7 +48,8 @@ elif choice == "Identify Plant Disease":
         st.image(image, caption='Uploaded Image', use_column_width=True)
         st.success("Processing Image... (Integrate ML Model Here)")
 
-elif choice == "Crop Yield Prediction":
+st.sidebar.subheader("Yield Prediction")
+if st.sidebar.button("Crop Yield Prediction"):
     st.subheader("📊 Crop Yield Prediction")
     area = st.number_input("Field Area (hectares)")
     rainfall = st.number_input("Rainfall (mm)")
@@ -58,7 +59,8 @@ elif choice == "Crop Yield Prediction":
         prediction = yield_model.predict(features)
         st.success(f"Predicted Yield: {prediction[0]} tons")
 
-elif choice == "Today's Weather":
+st.sidebar.subheader("Weather Information")
+if st.sidebar.button("Today's Weather"):
     st.subheader("🌤️ Weather Forecast")
     zip_code = st.text_input("Enter ZIP Code")
     country_code = st.text_input("Enter Country Code (e.g., IN for India)", value="IN")
@@ -71,7 +73,8 @@ elif choice == "Today's Weather":
         else:
             st.error("Invalid ZIP Code or Country Code!")
 
-elif choice == "Fertilizer Recommendation":
+st.sidebar.subheader("Fertilizer Management")
+if st.sidebar.button("Fertilizer Recommendation"):
     st.subheader("🧪 Fertilizer Recommendation")
     crop = st.text_input("Enter Crop Name")
     soil_type = st.text_input("Enter Soil Type")
@@ -80,7 +83,8 @@ elif choice == "Fertilizer Recommendation":
         prediction = fertilizer_model.predict(features)
         st.success(f"Recommended Fertilizer: {prediction[0]}")
 
-elif choice == "Smart Farming Guidance":
+st.sidebar.subheader("Smart Farming")
+if st.sidebar.button("Smart Farming Guidance"):
     st.subheader("📚 Smart Farming Tips")
     st.write("✅ Use precision farming techniques.")
     st.write("✅ Implement soil testing for better yield.")
