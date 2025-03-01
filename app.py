@@ -3,6 +3,7 @@ import requests
 from PIL import Image
 import numpy as np
 import joblib
+from openai import OpenAI
 
 # Load ML models (Replace with your actual models)
 crop_model = joblib.load('models/crop_recommendation.pkl')
