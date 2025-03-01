@@ -6,8 +6,8 @@ import joblib
 
 # Load ML models (Replace with your actual models)
 crop_model = joblib.load('models/crop_recommendation.pkl')
-yield_model = joblib.load('models/yield_prediction.pkl')
-fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
+# yield_model = joblib.load('models/yield_prediction.pkl')
+# fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
 
 def get_weather(zip_code, country_code="IN"):
     api_key = "your_api_key_here"
