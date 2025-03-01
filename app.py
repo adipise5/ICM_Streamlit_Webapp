@@ -9,9 +9,9 @@ crop_model = joblib.load('models/crop_recommendation.pkl')
 # yield_model = joblib.load('models/yield_prediction.pkl')
 # fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
 
-def get_weather(city):
+def get_weather(lat, lon):
     api_key = "f938f65079af3e9bd2414c6556df724b"
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
     response = requests.get(url).json()
     return response
 
@@ -55,15 +55,19 @@ elif choice == "Crop Yield Prediction":
 
 elif choice == "Today's Weather":
     st.subheader("🌤️ Weather Forecast")
-    city = st.text_input("Enter City Name")
+    
+    lat = st.number_input("Enter Latitude", format="%.6f")
+    lon = st.number_input("Enter Longitude", format="%.6f")
+    
     if st.button("Get Weather"):
-        weather_data = get_weather(city)
+        weather_data = get_weather(lat, lon)
+        
         if weather_data.get('main'):
             st.write(f"Temperature: {weather_data['main']['temp']}°C")
             st.write(f"Weather: {weather_data['weather'][0]['description']}")
             st.write(f"Humidity: {weather_data['main']['humidity']}%")
         else:
-            st.error("Invalid City Name!")
+            st.error("Invalid Coordinates or API Issue!")
 
 elif choice == "Fertilizer Recommendation":
     st.subheader("🧪 Fertilizer Recommendation")
