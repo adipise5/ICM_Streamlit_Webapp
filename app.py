@@ -9,11 +9,16 @@ crop_model = joblib.load('models/crop_recommendation.pkl')
 # yield_model = joblib.load('models/yield_prediction.pkl')
 # fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
 
-def get_weather(lat, lon):
-    api_key = "f938f65079af3e9bd2414c6556df724b"
-    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+def get_weather(zip_code, country_code="IN"):
+    api_key = "your_api_key_here"
+    url = f"http://api.openweathermap.org/geo/1.0/zip?zip={zip_code},{country_code}&appid={api_key}"
     response = requests.get(url).json()
-    return response
+    if 'lat' in response and 'lon' in response:
+        lat, lon = response['lat'], response['lon']
+        weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+        weather_response = requests.get(weather_url).json()
+        return weather_response
+    return None
 
 st.set_page_config(page_title="Bhoomi Dashboard", layout="wide")
 
@@ -55,19 +60,16 @@ elif choice == "Crop Yield Prediction":
 
 elif choice == "Today's Weather":
     st.subheader("🌤️ Weather Forecast")
-    
-    lat = st.number_input("Enter Latitude", format="%.6f")
-    lon = st.number_input("Enter Longitude", format="%.6f")
-    
+    zip_code = st.text_input("Enter ZIP Code")
+    country_code = st.text_input("Enter Country Code (e.g., IN for India)", value="IN")
     if st.button("Get Weather"):
-        weather_data = get_weather(lat, lon)
-        
-        if weather_data.get('main'):
+        weather_data = get_weather(zip_code, country_code)
+        if weather_data and weather_data.get('main'):
             st.write(f"Temperature: {weather_data['main']['temp']}°C")
             st.write(f"Weather: {weather_data['weather'][0]['description']}")
             st.write(f"Humidity: {weather_data['main']['humidity']}%")
         else:
-            st.error("Invalid Coordinates or API Issue!")
+            st.error("Invalid ZIP Code or Country Code!")
 
 elif choice == "Fertilizer Recommendation":
     st.subheader("🧪 Fertilizer Recommendation")
