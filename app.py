@@ -22,20 +22,43 @@ def get_weather(zip_code, country_code="IN"):
 
 st.set_page_config(page_title="Bhoomi Dashboard", layout="wide")
 
+st.markdown(
+    """
+    <style>
+        .sidebar .sidebar-content {
+            transition: all 0.5s ease-in-out;
+        }
+        .sidebar:hover .sidebar-content {
+            transform: scale(1.05);
+        }
+        .stRadio > label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.title("🌱 Bhoomi - Integrated Crop Management System")
 
 # Sidebar Navigation
-st.sidebar.title("Navigation")
+st.sidebar.title("🌍 Navigation")
 
 if 'menu' not in st.session_state:
     st.session_state['menu'] = "Home"
 
-menu_options = [
-    "Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
-    "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"
-]
+menu_options = {
+    "Home": "🏠 Home",
+    "Crop Recommendation": "🌾 Crop Recommendation",
+    "Identify Plant Disease": "🦠 Identify Plant Disease",
+    "Crop Yield Prediction": "📊 Crop Yield Prediction",
+    "Today's Weather": "🌤️ Today's Weather",
+    "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
+    "Smart Farming Guidance": "📚 Smart Farming Guidance"
+}
 
-selected_menu = st.sidebar.radio("Go to", menu_options, index=menu_options.index(st.session_state['menu']))
+selected_menu = st.sidebar.radio("Go to", list(menu_options.keys()), format_func=lambda x: menu_options[x], index=list(menu_options.keys()).index(st.session_state['menu']))
 st.session_state['menu'] = selected_menu
 
 if selected_menu == "Crop Recommendation":
