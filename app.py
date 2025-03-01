@@ -113,6 +113,8 @@ elif selected_menu == "Today's Weather":
     if st.button("Get Weather"):
         weather_data = get_weather(zip_code, country_code)
         if weather_data and weather_data.get('main'):
+            city_name = weather_data.get('name', 'Unknown Location')
+            st.write(f"Location: {city_name}")
             st.write(f"Temperature: {weather_data['main']['temp']}°C")
             st.write(f"Weather: {weather_data['weather'][0]['description']}")
             st.write(f"Humidity: {weather_data['main']['humidity']}%")
