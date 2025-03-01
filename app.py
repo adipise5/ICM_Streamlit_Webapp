@@ -6,11 +6,11 @@ import joblib
 
 # Load ML models (Replace with your actual models)
 crop_model = joblib.load('models/crop_recommendation.pkl')
-# yield_model = joblib.load('models/yield_prediction.pkl')
-# fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
+yield_model = joblib.load('models/yield_prediction.pkl')
+fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
 
 def get_weather(zip_code, country_code="IN"):
-    api_key = "f938f65079af3e9bd2414c6556df724b"
+    api_key = "your_api_key_here"
     url = f"http://api.openweathermap.org/geo/1.0/zip?zip={zip_code},{country_code}&appid={api_key}"
     response = requests.get(url).json()
     if 'lat' in response and 'lon' in response:
@@ -26,7 +26,19 @@ st.title("🌱 Bhoomi - Integrated Crop Management System")
 
 # Sidebar Navigation
 st.sidebar.title("Navigation")
-if st.sidebar.button("Crop Recommendation"):
+
+if 'menu' not in st.session_state:
+    st.session_state['menu'] = "Home"
+
+menu_options = [
+    "Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
+    "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"
+]
+
+selected_menu = st.sidebar.radio("Go to", menu_options, index=menu_options.index(st.session_state['menu']))
+st.session_state['menu'] = selected_menu
+
+if selected_menu == "Crop Recommendation":
     st.subheader("🌾 Crop Recommendation System")
     nitrogen = st.number_input("Nitrogen Level", min_value=0)
     phosphorus = st.number_input("Phosphorus Level", min_value=0)
@@ -38,7 +50,7 @@ if st.sidebar.button("Crop Recommendation"):
         prediction = crop_model.predict(features)
         st.success(f"Recommended Crop: {prediction[0]}")
 
-if st.sidebar.button("Identify Plant Disease"):
+elif selected_menu == "Identify Plant Disease":
     st.subheader("🦠 Plant Disease Identification")
     uploaded_file = st.file_uploader("Upload Plant Image", type=["jpg", "png", "jpeg"])
     if uploaded_file is not None:
@@ -46,7 +58,7 @@ if st.sidebar.button("Identify Plant Disease"):
         st.image(image, caption='Uploaded Image', use_column_width=True)
         st.success("Processing Image... (Integrate ML Model Here)")
 
-if st.sidebar.button("Crop Yield Prediction"):
+elif selected_menu == "Crop Yield Prediction":
     st.subheader("📊 Crop Yield Prediction")
     area = st.number_input("Field Area (hectares)")
     rainfall = st.number_input("Rainfall (mm)")
@@ -56,7 +68,7 @@ if st.sidebar.button("Crop Yield Prediction"):
         prediction = yield_model.predict(features)
         st.success(f"Predicted Yield: {prediction[0]} tons")
 
-if st.sidebar.button("Today's Weather"):
+elif selected_menu == "Today's Weather":
     st.subheader("🌤️ Weather Forecast")
     zip_code = st.text_input("Enter ZIP Code")
     country_code = st.text_input("Enter Country Code (e.g., IN for India)", value="IN")
@@ -69,7 +81,7 @@ if st.sidebar.button("Today's Weather"):
         else:
             st.error("Invalid ZIP Code or Country Code!")
 
-if st.sidebar.button("Fertilizer Recommendation"):
+elif selected_menu == "Fertilizer Recommendation":
     st.subheader("🧪 Fertilizer Recommendation")
     crop = st.text_input("Enter Crop Name")
     soil_type = st.text_input("Enter Soil Type")
@@ -78,8 +90,7 @@ if st.sidebar.button("Fertilizer Recommendation"):
         prediction = fertilizer_model.predict(features)
         st.success(f"Recommended Fertilizer: {prediction[0]}")
 
-st.sidebar.subheader("Smart Farming")
-if st.sidebar.button("Smart Farming Guidance"):
+elif selected_menu == "Smart Farming Guidance":
     st.subheader("📚 Smart Farming Tips")
     st.write("✅ Use precision farming techniques.")
     st.write("✅ Implement soil testing for better yield.")
