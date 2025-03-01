@@ -10,7 +10,7 @@ crop_model = joblib.load('models/crop_recommendation.pkl')
 # fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
 
 def get_weather(city):
-    api_key = "780ed04b62c9b01972be4c0193aafad2"
+    api_key = "f938f65079af3e9bd2414c6556df724b"
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
     response = requests.get(url).json()
     return response
