@@ -10,7 +10,7 @@ crop_model = joblib.load('models/crop_recommendation.pkl')
 # fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
 
 def get_weather(zip_code, country_code="IN"):
-    api_key = "your_api_key_here"
+    api_key = "f938f65079af3e9bd2414c6556df724b"
     url = f"http://api.openweathermap.org/geo/1.0/zip?zip={zip_code},{country_code}&appid={api_key}"
     response = requests.get(url).json()
     if 'lat' in response and 'lon' in response:
