@@ -9,9 +9,9 @@ crop_model = joblib.load('models/Crop_recommendation.pkl')
 yield_model = joblib.load('models/yield_prediction.pkl')
 fertilizer_model = joblib.load('models/fertilizer_recommendation.pkl')
 
-def get_weather(city, statecode, countrycode):
+def get_weather(city):
     api_key = "your_api_key_here"
-    url = f"http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}"
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
     response = requests.get(url).json()
     return response
 
