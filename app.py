@@ -19,6 +19,16 @@ def get_weather(zip_code, country_code="IN"):
         weather_response = requests.get(weather_url).json()
         return weather_response
     return None
+    
+def get_smart_farming_info(crop, country):
+    openai.api_key = "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"
+    prompt = f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices."
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "system", "content": "You are an expert in smart farming."},
+                  {"role": "user", "content": prompt}]
+    )
+    return response["choices"][0]["message"]["content"]
 
 st.set_page_config(page_title="Bhoomi Dashboard", layout="wide")
 
@@ -131,8 +141,11 @@ elif selected_menu == "Fertilizer Recommendation":
         st.success(f"Recommended Fertilizer: {prediction[0]}")
 
 elif selected_menu == "Smart Farming Guidance":
-    st.subheader("📚 Smart Farming Tips")
-    st.write("✅ Use precision farming techniques.")
-    st.write("✅ Implement soil testing for better yield.")
-    st.write("✅ Adopt AI and IoT for automated irrigation.")
-    st.write("✅ Practice crop rotation to maintain soil fertility.")
+    st.subheader("📚 Smart Farming Guidance")
+    crop = st.text_input("Enter Crop Name")
+    country = st.text_input("Enter Country Name")
+    if st.button("Get Smart Farming Info"):
+        guidance = get_smart_farming_info(crop, country)
+        st.write(guidance)
+        st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_column_width=True)
+
