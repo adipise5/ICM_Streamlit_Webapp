@@ -31,9 +31,21 @@ st.markdown(
         .sidebar:hover .sidebar-content {
             transform: scale(1.05);
         }
-        .stRadio > label {
-            font-size: 16px;
+        .menu-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 18px;
             font-weight: bold;
+            text-align: left;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        .menu-button:hover {
+            background-color: #d9d9d9;
         }
     </style>
     """,
@@ -58,8 +70,11 @@ menu_options = {
     "Smart Farming Guidance": "📚 Smart Farming Guidance"
 }
 
-selected_menu = st.sidebar.radio("Go to", list(menu_options.keys()), format_func=lambda x: menu_options[x], index=list(menu_options.keys()).index(st.session_state['menu']))
-st.session_state['menu'] = selected_menu
+for key, label in menu_options.items():
+    if st.sidebar.button(label, key=key):
+        st.session_state['menu'] = key
+
+selected_menu = st.session_state['menu']
 
 if selected_menu == "Crop Recommendation":
     st.subheader("🌾 Crop Recommendation System")
