@@ -1,0 +1,11 @@
+streamlit
+numpy
+pandas
+scikit-learn
+joblib
+requests
+tensorflow  # If using deep learning (for plant disease detection)
+Pillow  # For image processing
+matplotlib  # For data visualization (optional)
+seaborn  # For better plots (optional)
+openai  # If using AI-based recommendations
