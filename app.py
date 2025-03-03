@@ -36,36 +36,27 @@ st.set_page_config(page_title="Bhoomi Dashboard", layout="wide")
 st.markdown(
     """
     <style>
-        body {
-            background-color: #e9f5e9;
-            font-family: 'Arial', sans-serif;
+        .sidebar .sidebar-content {
+            transition: all 0.5s ease-in-out;
         }
-        .sidebar {
-            background: linear-gradient(180deg, #4CAF50 0%, #2E7D32 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
+        .sidebar:hover .sidebar-content {
+            transform: scale(1.05);
         }
         .menu-button {
             display: block;
             width: 100%;
-            padding: 12px;
-            margin: 8px 0;
+            padding: 10px;
+            margin: 5px 0;
             font-size: 18px;
             font-weight: bold;
             text-align: left;
-            background-color: transparent;
-            color: white;
+            background-color: #f0f0f0;
             border: none;
             border-radius: 5px;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: background 0.3s ease;
         }
         .menu-button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        h1 {
-            color: #4CAF50;
+            background-color: #d9d9d9;
         }
     </style>
     """,
@@ -76,24 +67,23 @@ st.title("🌱 Bhoomi - Integrated Crop Management System")
 
 # Sidebar Navigation
 st.sidebar.title("🌍 Navigation")
+
 if 'menu' not in st.session_state:
     st.session_state['menu'] = "Home"
 
-# Collapsible sidebar section
-with st.sidebar.expander("Menu", expanded=True):
-    menu_options = {
-        "Home": "🏠 Home",
-        "Crop Recommendation": "🌾 Crop Recommendation",
-        "Identify Plant Disease": "🦠 Identify Plant Disease",
-        "Crop Yield Prediction": "📊 Crop Yield Prediction",
-        "Today's Weather": "🌤️ Today's Weather",
-        "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
-        "Smart Farming Guidance": "📚 Smart Farming Guidance"
-    }
+menu_options = {
+    "Home": "🏠 Home",
+    "Crop Recommendation": "🌾 Crop Recommendation",
+    "Identify Plant Disease": "🦠 Identify Plant Disease",
+    "Crop Yield Prediction": "📊 Crop Yield Prediction",
+    "Today's Weather": "🌤️ Today's Weather",
+    "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
+    "Smart Farming Guidance": "📚 Smart Farming Guidance"
+}
 
-    for key, label in menu_options.items():
-        if st.button(label, key=key, help=f"Go to {label} section", css_class="menu-button"):
-            st.session_state['menu'] = key
+for key, label in menu_options.items():
+    if st.sidebar.button(label, key=key):
+        st.session_state['menu'] = key
 
 selected_menu = st.session_state['menu']
 
@@ -101,10 +91,10 @@ if selected_menu == "Crop Recommendation":
     st.subheader("🌾 Crop Recommendation System")
     nitrogen = st.number_input("Nitrogen Level", min_value=0)
     phosphorus = st.number_input("Phosphorus Level", min_value=0)
-    potassium = st.number_input("Potassium Level", min_value=0 )
+    potassium = st.number_input("Potassium Level", min_value=0)
     ph = st.number_input("pH Level", min_value=0.0, max_value=14.0)
     rainfall = st.number_input("Rainfall (mm)")
-    if st.button("Recommend Crop", css_class="menu-button"):
+    if st.button("Recommend Crop"):
         features = np.array([[nitrogen, phosphorus, potassium, ph, rainfall]])
         prediction = crop_model.predict(features)
         st.success(f"Recommended Crop: {prediction[0]}")
@@ -122,7 +112,7 @@ elif selected_menu == "Crop Yield Prediction":
     area = st.number_input("Field Area (hectares)")
     rainfall = st.number_input("Rainfall (mm)")
     temperature = st.number_input("Temperature (°C)")
-    if st.button("Predict Yield", css_class="menu-button"):
+    if st.button("Predict Yield"):
         features = np.array([[area, rainfall, temperature]])
         prediction = yield_model.predict(features)
         st.success(f"Predicted Yield: {prediction[0]} tons")
@@ -131,7 +121,7 @@ elif selected_menu == "Today's Weather":
     st.subheader("🌤️ Weather Forecast")
     zip_code = st.text_input("Enter ZIP Code")
     country_code = st.text_input("Enter Country Code (e.g., IN for India)", value="IN")
-    if st.button("Get Weather", css_class="menu-button"):
+    if st.button("Get Weather"):
         weather_data = get_weather(zip_code, country_code)
         if weather_data and weather_data.get('main'):
             city_name = weather_data.get('name', 'Unknown Location')
@@ -146,7 +136,7 @@ elif selected_menu == "Fertilizer Recommendation":
     st.subheader("🧪 Fertilizer Recommendation")
     crop = st.text_input("Enter Crop Name")
     soil_type = st.text_input("Enter Soil Type")
-    if st.button("Recommend Fertilizer", css_class="menu-button"):
+    if st.button("Recommend Fertilizer"):
         features = np.array([[crop, soil_type]])
         prediction = fertilizer_model.predict(features)
         st.success(f"Recommended Fertilizer: {prediction[0]}")
@@ -155,7 +145,8 @@ elif selected_menu == "Smart Farming Guidance":
     st.subheader("📚 Smart Farming Guidance")
     crop = st.text_input("Enter Crop Name")
     country = st.text_input("Enter Country Name")
-    if st.button("Get Smart Farming Info", css_class="menu-button"):
+    if st.button("Get Smart Farming Info"):
         guidance = get_smart_farming_info(crop, country)
         st.write(guidance)
         st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_column_width=True)
+
