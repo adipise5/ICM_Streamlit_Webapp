@@ -46,12 +46,6 @@ st.markdown(
             padding: 20px;
             border-radius: 10px;
         }
-        .sidebar .sidebar-content {
-            transition: all 0.5s ease-in-out;
-        }
-        .sidebar:hover .sidebar-content {
-            transform: scale(1.05);
-        }
         .menu-button {
             display: block;
             width: 100%;
@@ -82,23 +76,24 @@ st.title("🌱 Bhoomi - Integrated Crop Management System")
 
 # Sidebar Navigation
 st.sidebar.title("🌍 Navigation")
-
 if 'menu' not in st.session_state:
     st.session_state['menu'] = "Home"
 
-menu_options = {
-    "Home": "🏠 Home",
-    "Crop Recommendation": "🌾 Crop Recommendation",
-    "Identify Plant Disease": "🦠 Identify Plant Disease",
-    "Crop Yield Prediction": "📊 Crop Yield Prediction",
-    "Today's Weather": "🌤️ Today's Weather",
-    "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
-    "Smart Farming Guidance": "📚 Smart Farming Guidance"
-}
+# Collapsible sidebar section
+with st.sidebar.expander("Menu", expanded=True):
+    menu_options = {
+        "Home": "🏠 Home",
+        "Crop Recommendation": "🌾 Crop Recommendation",
+        "Identify Plant Disease": "🦠 Identify Plant Disease",
+        "Crop Yield Prediction": "📊 Crop Yield Prediction",
+        "Today's Weather": "🌤️ Today's Weather",
+        "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
+        "Smart Farming Guidance": "📚 Smart Farming Guidance"
+    }
 
-for key, label in menu_options.items():
-    if st.sidebar.button(label, key=key, help=f"Go to {label} section", css_class="menu-button"):
-        st.session_state['menu'] = key
+    for key, label in menu_options.items():
+        if st.button(label, key=key, help=f"Go to {label} section", css_class="menu-button"):
+            st.session_state['menu'] = key
 
 selected_menu = st.session_state['menu']
 
@@ -106,7 +101,7 @@ if selected_menu == "Crop Recommendation":
     st.subheader("🌾 Crop Recommendation System")
     nitrogen = st.number_input("Nitrogen Level", min_value=0)
     phosphorus = st.number_input("Phosphorus Level", min_value=0)
-    potassium = st.number_input("Potassium Level", min_value=0)
+    potassium = st.number_input("Potassium Level", min_value=0 )
     ph = st.number_input("pH Level", min_value=0.0, max_value=14.0)
     rainfall = st.number_input("Rainfall (mm)")
     if st.button("Recommend Crop", css_class="menu-button"):
@@ -164,25 +159,3 @@ elif selected_menu == "Smart Farming Guidance":
         guidance = get_smart_farming_info(crop, country)
         st.write(guidance)
         st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_column_width=True)
-
-# Footer for contact information and credits
-st.markdown(
-    """
-    <style>
-        .footer {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            background-color: #4CAF50;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-        }
-    </style>
-    <div class="footer">
-        <p>Contact us: support@bhoomidashboard.com | © 2023 Bhoomi Dashboard</p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
