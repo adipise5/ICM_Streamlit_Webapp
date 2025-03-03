@@ -40,10 +40,14 @@ st.markdown(
             background-color: #e9f5e9;
             font-family: 'Arial', sans-serif;
         }
+        .sidebar {
+            background: linear-gradient(180deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
         .sidebar .sidebar-content {
             transition: all 0.5s ease-in-out;
-            background-color: #f7f7f7;
-            border-right: 2px solid #ccc;
         }
         .sidebar:hover .sidebar-content {
             transform: scale(1.05);
@@ -56,14 +60,14 @@ st.markdown(
             font-size: 18px;
             font-weight: bold;
             text-align: left;
-            background-color: #4CAF50;
+            background-color: transparent;
             color: white;
             border: none;
             border-radius: 5px;
             transition: background 0.3s ease, transform 0.2s ease;
         }
         .menu-button:hover {
-            background-color: #45a049;
+            background-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
         h1 {
@@ -96,7 +100,7 @@ for key, label in menu_options.items():
     if st.sidebar.button(label, key=key, help=f"Go to {label} section", css_class="menu-button"):
         st.session_state['menu'] = key
 
-selected_menu = st .session_state['menu']
+selected_menu = st.session_state['menu']
 
 if selected_menu == "Crop Recommendation":
     st.subheader("🌾 Crop Recommendation System")
@@ -159,4 +163,26 @@ elif selected_menu == "Smart Farming Guidance":
     if st.button("Get Smart Farming Info", css_class="menu-button"):
         guidance = get_smart_farming_info(crop, country)
         st.write(guidance)
-        st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_column_width=True) ```python
+        st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_column_width=True)
+
+# Footer for contact information and credits
+st.markdown(
+    """
+    <style>
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+    </style>
+    <div class="footer">
+        <p>Contact us: support@bhoomidashboard.com | © 2023 Bhoomi Dashboard</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
