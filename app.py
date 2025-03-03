@@ -52,7 +52,7 @@ with st.container():
     
     # Display Image
     farm_image = Image.open("farm.jpg")
-    st.image(farm_image, caption="Sustainable Farming", use_column_width=True)
+    st.image(farm_image, caption="Sustainable Farming", use_container_width=True)
 
 # Sidebar Navigation
 st.sidebar.title("🌍 Navigation")
