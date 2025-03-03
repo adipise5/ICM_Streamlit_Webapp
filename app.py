@@ -36,8 +36,14 @@ st.set_page_config(page_title="Bhoomi Dashboard", layout="wide")
 st.markdown(
     """
     <style>
+        body {
+            background-color: #e9f5e9;
+            font-family: 'Arial', sans-serif;
+        }
         .sidebar .sidebar-content {
             transition: all 0.5s ease-in-out;
+            background-color: #f7f7f7;
+            border-right: 2px solid #ccc;
         }
         .sidebar:hover .sidebar-content {
             transform: scale(1.05);
@@ -45,18 +51,23 @@ st.markdown(
         .menu-button {
             display: block;
             width: 100%;
-            padding: 10px;
-            margin: 5px 0;
+            padding: 12px;
+            margin: 8px 0;
             font-size: 18px;
             font-weight: bold;
             text-align: left;
-            background-color: #f0f0f0;
+            background-color: #4CAF50;
+            color: white;
             border: none;
             border-radius: 5px;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.2s ease;
         }
         .menu-button:hover {
-            background-color: #d9d9d9;
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        h1 {
+            color: #4CAF50;
         }
     </style>
     """,
@@ -82,10 +93,10 @@ menu_options = {
 }
 
 for key, label in menu_options.items():
-    if st.sidebar.button(label, key=key):
+    if st.sidebar.button(label, key=key, help=f"Go to {label} section", css_class="menu-button"):
         st.session_state['menu'] = key
 
-selected_menu = st.session_state['menu']
+selected_menu = st .session_state['menu']
 
 if selected_menu == "Crop Recommendation":
     st.subheader("🌾 Crop Recommendation System")
@@ -94,7 +105,7 @@ if selected_menu == "Crop Recommendation":
     potassium = st.number_input("Potassium Level", min_value=0)
     ph = st.number_input("pH Level", min_value=0.0, max_value=14.0)
     rainfall = st.number_input("Rainfall (mm)")
-    if st.button("Recommend Crop"):
+    if st.button("Recommend Crop", css_class="menu-button"):
         features = np.array([[nitrogen, phosphorus, potassium, ph, rainfall]])
         prediction = crop_model.predict(features)
         st.success(f"Recommended Crop: {prediction[0]}")
@@ -112,7 +123,7 @@ elif selected_menu == "Crop Yield Prediction":
     area = st.number_input("Field Area (hectares)")
     rainfall = st.number_input("Rainfall (mm)")
     temperature = st.number_input("Temperature (°C)")
-    if st.button("Predict Yield"):
+    if st.button("Predict Yield", css_class="menu-button"):
         features = np.array([[area, rainfall, temperature]])
         prediction = yield_model.predict(features)
         st.success(f"Predicted Yield: {prediction[0]} tons")
@@ -121,7 +132,7 @@ elif selected_menu == "Today's Weather":
     st.subheader("🌤️ Weather Forecast")
     zip_code = st.text_input("Enter ZIP Code")
     country_code = st.text_input("Enter Country Code (e.g., IN for India)", value="IN")
-    if st.button("Get Weather"):
+    if st.button("Get Weather", css_class="menu-button"):
         weather_data = get_weather(zip_code, country_code)
         if weather_data and weather_data.get('main'):
             city_name = weather_data.get('name', 'Unknown Location')
@@ -136,7 +147,7 @@ elif selected_menu == "Fertilizer Recommendation":
     st.subheader("🧪 Fertilizer Recommendation")
     crop = st.text_input("Enter Crop Name")
     soil_type = st.text_input("Enter Soil Type")
-    if st.button("Recommend Fertilizer"):
+    if st.button("Recommend Fertilizer", css_class="menu-button"):
         features = np.array([[crop, soil_type]])
         prediction = fertilizer_model.predict(features)
         st.success(f"Recommended Fertilizer: {prediction[0]}")
@@ -145,8 +156,7 @@ elif selected_menu == "Smart Farming Guidance":
     st.subheader("📚 Smart Farming Guidance")
     crop = st.text_input("Enter Crop Name")
     country = st.text_input("Enter Country Name")
-    if st.button("Get Smart Farming Info"):
+    if st.button("Get Smart Farming Info", css_class="menu-button"):
         guidance = get_smart_farming_info(crop, country)
         st.write(guidance)
-        st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_column_width=True)
-
+        st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_column_width=True) ```python
