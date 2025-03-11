@@ -92,10 +92,10 @@ if selected_menu == "Home":
     st.markdown("<h1 class='home-title'>🌱 Welcome to Bhoomi!</h1>", unsafe_allow_html=True)
     st.markdown("<p class='home-subtitle'>Your Smart AI-based Integrated Crop Management System</p>", unsafe_allow_html=True)
 
-    st.image("img/futuristic-technology-concept.jpg", use_container_width=True)
-    image = image.resize((400, 200))
+    image = Image.open("img/futuristic-technology-concept.jpg")  
+    image = image.resize((400, 200))  
     st.image(image)
-
+    
     st.write(
         "Bhoomi is designed to empower farmers with AI-driven insights and predictions for smarter agricultural decisions. "
         "From **crop recommendations** to **disease detection**, and **yield predictions**, Bhoomi integrates advanced machine learning models to enhance farming efficiency."
