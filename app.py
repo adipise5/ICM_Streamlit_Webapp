@@ -23,16 +23,18 @@ def get_weather(zip_code, country_code="IN"):
         return weather_response
     return None
 
-# OpenAI API for Smart Farming Guidance
-client = OpenAI(api_key="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")
+# ✅ Securely Load OpenAI API Key
+api_key = st.secrets["openai"]["api_key"]
+client = OpenAI(api_key=api_key)
 
 def get_smart_farming_info(crop, country):
-    prompt = f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices."
+    prompt = f"Provide smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices."
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}]
     )
     return response.choices[0].message.content
+    )
 
 # Load Lottie Animation
 def load_lottie_url(url: str):
@@ -175,7 +177,6 @@ elif selected_menu == "Smart Farming Guidance":
     if st.button("Get Smart Farming Info"):
         guidance = get_smart_farming_info(crop, country)
         st.write(guidance)
-        st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_container_width =True)
 
 # Add other features here...
 
