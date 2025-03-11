@@ -123,6 +123,48 @@ elif selected_menu == "Crop Recommendation":
         prediction = crop_model.predict(features)
         st.success(f"Recommended Crop: {prediction[0]}")
 
+elif selected_menu == "Identify Plant Disease":
+    st.subheader("🦠 Plant Disease Identification")
+    uploaded_file = st.file_uploader("Upload Plant Image", type=["jpg", "png", "jpeg"])
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption='Uploaded Image', use_column_width=True)
+        st.success("Processing Image... (Integrate ML Model Here)")
+
+elif selected_menu == "Crop Yield Prediction":
+    st.subheader("📊 Crop Yield Prediction")
+    area = st.number_input("Field Area (hectares)")
+    rainfall = st.number_input("Rainfall (mm)")
+    temperature = st.number_input("Temperature (°C)")
+    if st.button("Predict Yield"):
+        features = np.array([[area, rainfall, temperature]])
+        prediction = yield_model.predict(features)
+        st.success(f"Predicted Yield: {prediction[0]} tons")
+
+elif selected_menu == "Today's Weather":
+    st.subheader("🌤️ Weather Forecast")
+    zip_code = st.text_input("Enter ZIP Code")
+    country_code = st.text_input("Enter Country Code (e.g., IN for India)", value="IN")
+    if st.button("Get Weather"):
+        weather_data = get_weather(zip_code, country_code)
+        if weather_data and weather_data.get('main'):
+            city_name = weather_data.get('name', 'Unknown Location')
+            st.write(f"Location: {city_name}")
+            st.write(f"Temperature: {weather_data['main']['temp']}°C")
+            st.write(f"Weather: {weather_data['weather'][0]['description']}")
+            st.write(f"Humidity: {weather_data['main']['humidity']}%")
+        else:
+            st.error("Invalid ZIP Code or Country Code!")
+
+elif selected_menu == "Fertilizer Recommendation":
+    st.subheader("🧪 Fertilizer Recommendation")
+    crop = st.text_input("Enter Crop Name")
+    soil_type = st.text_input("Enter Soil Type")
+    if st.button("Recommend Fertilizer"):
+        features = np.array([[crop, soil_type]])
+        prediction = fertilizer_model.predict(features)
+        st.success(f"Recommended Fertilizer: {prediction[0]}")
+
 # Smart Farming Guidance
 elif selected_menu == "Smart Farming Guidance":
     st.subheader("📚 Smart Farming Guidance")
