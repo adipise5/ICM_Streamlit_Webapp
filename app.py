@@ -94,6 +94,7 @@ if selected_menu == "Home":
 
     st.image("img/futuristic-technology-concept.jpg", use_container_width=True)
     image = image.resize((400, 200))
+    st.image(image)
 
     st.write(
         "Bhoomi is designed to empower farmers with AI-driven insights and predictions for smarter agricultural decisions. "
