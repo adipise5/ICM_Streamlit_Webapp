@@ -92,7 +92,7 @@ if selected_menu == "Home":
     st.markdown("<h1 class='home-title'>🌱 Welcome to Bhoomi!</h1>", unsafe_allow_html=True)
     st.markdown("<p class='home-subtitle'>Your Smart AI-based Integrated Crop Management System</p>", unsafe_allow_html=True)
 
-    st.image("https://source.unsplash.com/1000x400/?farming,agriculture", use_column_width=True)
+    st.image("https://source.unsplash.com/1000x400/?farming,agriculture", use_container_width =True)
 
     st.write(
         "Bhoomi is designed to empower farmers with AI-driven insights and predictions for smarter agricultural decisions. "
@@ -131,7 +131,7 @@ elif selected_menu == "Smart Farming Guidance":
     if st.button("Get Smart Farming Info"):
         guidance = get_smart_farming_info(crop, country)
         st.write(guidance)
-        st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_column_width=True)
+        st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop}", use_container_width =True)
 
 # Add other features here...
 
