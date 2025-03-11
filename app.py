@@ -58,7 +58,6 @@ st.markdown(
         .menu-button { display: block; width: 100%; padding: 10px; margin: 5px 0; font-size: 18px; font-weight: bold; text-align: left;
             background-color: #f0f0f0; border: none; border-radius: 5px; transition: background 0.3s ease; }
         .menu-button:hover { background-color: #d9d9d9; }
-        .stApp {background: url("img/futuristic-technology-concept.jpg") no-repeat center center fixed; background-size: cover;}
     </style>
     """,
     unsafe_allow_html=True
