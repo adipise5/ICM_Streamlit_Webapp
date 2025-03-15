@@ -12,8 +12,8 @@ import pandas as pd
 # Must be the first Streamlit command
 st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar_state="expanded")
 
-# Initialize OpenAI client (replace with your actual key)
-client = OpenAI(api_key="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")
+# Initialize OpenAI client with the correct API key
+client = OpenAI(api_key="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")  # Replace with your actual OpenAI API key
 
 # Load ML models with caching and error handling
 @st.cache_resource
@@ -52,12 +52,15 @@ def get_weather(zip_code, country_code="IN"):
 
 @st.cache_data
 def get_smart_farming_info(crop, country):
-    prompt = f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices."
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response.choices[0].message.content
+    try:
+        prompt = f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices."
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error fetching smart farming guidance: {str(e)}"
 
 def predict_disease(image):
     if disease_model is None:
@@ -294,3 +297,4 @@ else:
                 st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop.capitalize()}", use_column_width=True)
             else:
                 st.error("Please fill in all fields.")
+
