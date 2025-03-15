@@ -3,17 +3,22 @@ import requests
 from PIL import Image
 import numpy as np
 import joblib
-from openai import OpenAI
+import os
 import io
 from tensorflow.keras.preprocessing import image as keras_image
 import plotly.express as px
 import pandas as pd
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Must be the first Streamlit command
 st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar_state="expanded")
 
-# Initialize OpenAI client with the correct API key
-client = OpenAI(api_key="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")  # Replace with your actual OpenAI API key
+# xAI API Key from environment variable
+XAI_API_KEY = os.getenv("XAI_API_KEY", "xai-Es0CPO6ARiKBHkmHpO4PdiMGFJUjDDqFq6mNWJeQVLdeF8bv9SpezkYC0nQCC9R3tZChgopAQME9bpmo")
+XAI_API_URL = "https://api.x.ai/v1/completions"  # Hypothetical URL; replace with the actual xAI API endpoint
 
 # Load ML models with caching and error handling
 @st.cache_resource
@@ -53,12 +58,20 @@ def get_weather(zip_code, country_code="IN"):
 @st.cache_data
 def get_smart_farming_info(crop, country):
     try:
-        prompt = f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices."
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return response.choices[0].message.content
+        headers = {
+            "Authorization": f"Bearer {XAI_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "grok",  # Assuming "grok" is the model name; adjust as per xAI API docs
+            "prompt": f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices.",
+            "max_tokens": 500  # Adjust based on xAI API requirements
+        }
+        response = requests.post(XAI_API_URL, json=payload, headers=headers)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        data = response.json()
+        # Adjust the response parsing based on the actual xAI API response structure
+        return data.get("choices", [{}])[0].get("text", "No guidance available")
     except Exception as e:
         return f"Error fetching smart farming guidance: {str(e)}"
 
@@ -297,4 +310,3 @@ else:
                 st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop.capitalize()}", use_column_width=True)
             else:
                 st.error("Please fill in all fields.")
-
