@@ -7,6 +7,9 @@ from openai import OpenAI
 import io
 from tensorflow.keras.preprocessing import image as keras_image  # Placeholder for disease model
 
+# Must be the first Streamlit command
+st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar_state="expanded")
+
 # Initialize OpenAI client (replace with your actual key)
 client = OpenAI(api_key="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")
 
@@ -20,8 +23,11 @@ def load_model(model_path):
         return None
 
 crop_model = load_model('models/crop_recommendation.pkl')
-yield_model = load_model('models/yield_prediction.pkl')
-fertilizer_model = load_model('models/fertilizer_recommendation.pkl')
+# Commenting out models that aren't ready yet
+# yield_model = load_model('models/yield_prediction.pkl')
+# fertilizer_model = load_model('models/fertilizer_recommendation.pkl')
+yield_model = None  # Placeholder
+fertilizer_model = None  # Placeholder
 
 # Placeholder for disease model (replace with actual model loading if available)
 @st.cache_resource
@@ -122,8 +128,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# App configuration
-st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar_state="expanded")
+# App title and intro
 st.title("🌱 Bhoomi - Integrated Crop Management System")
 st.markdown("A smart farming tool to optimize your agricultural practices.")
 
@@ -171,6 +176,8 @@ elif selected_menu == "Crop Recommendation":
             st.success(f"Recommended Crop: **{prediction[0]}**")
         else:
             st.error("Please fill in all fields.")
+    elif submitted and not crop_model:
+        st.warning("Crop recommendation model not available yet.")
 
 elif selected_menu == "Identify Plant Disease":
     st.subheader("🦠 Plant Disease Identification")
@@ -189,14 +196,17 @@ elif selected_menu == "Crop Yield Prediction":
         rainfall = st.number_input("Rainfall (mm)", min_value=0.0, value=0.0)
         temperature = st.number_input("Temperature (°C)", min_value=-50.0, max_value=50.0, value=25.0)
         submitted = st.form_submit_button("Predict Yield")
-    if submitted and yield_model:
-        if all([area, rainfall, temperature]):
-            features = np.array([[area, rainfall, temperature]])
-            with st.spinner("Predicting yield..."):
-                prediction = yield_model.predict(features)
-            st.success(f"Predicted Yield: **{prediction[0]:.2f} tons**")
+    if submitted:
+        if yield_model:
+            if all([area, rainfall, temperature]):
+                features = np.array([[area, rainfall, temperature]])
+                with st.spinner("Predicting yield..."):
+                    prediction = yield_model.predict(features)
+                st.success(f"Predicted Yield: **{prediction[0]:.2f} tons**")
+            else:
+                st.error("Please fill in all fields.")
         else:
-            st.error("Please fill in all fields.")
+            st.warning("Yield prediction model not available yet. Placeholder output: **5.0 tons**")
 
 elif selected_menu == "Today's Weather":
     st.subheader("🌤️ Weather Forecast")
@@ -224,15 +234,18 @@ elif selected_menu == "Fertilizer Recommendation":
         crop = st.text_input("Enter Crop Name", help="e.g., Rice")
         soil_type = st.text_input("Enter Soil Type", help="e.g., Sandy")
         submitted = st.form_submit_button("Recommend Fertilizer")
-    if submitted and fertilizer_model:
-        if crop and soil_type:
-            # Placeholder: assumes model accepts encoded inputs; adjust as needed
-            features = np.array([[hash(crop) % 100, hash(soil_type) % 100]])  # Dummy encoding
-            with st.spinner("Analyzing..."):
-                prediction = fertilizer_model.predict(features)
-            st.success(f"Recommended Fertilizer: **{prediction[0]}**")
+    if submitted:
+        if fertilizer_model:
+            if crop and soil_type:
+                # Placeholder: assumes model accepts encoded inputs; adjust as needed
+                features = np.array([[hash(crop) % 100, hash(soil_type) % 100]])  # Dummy encoding
+                with st.spinner("Analyzing..."):
+                    prediction = fertilizer_model.predict(features)
+                st.success(f"Recommended Fertilizer: **{prediction[0]}**")
+            else:
+                st.error("Please fill in all fields.")
         else:
-            st.error("Please fill in all fields.")
+            st.warning("Fertilizer recommendation model not available yet. Placeholder output: **NPK 20-20-20**")
 
 elif selected_menu == "Smart Farming Guidance":
     st.subheader("📚 Smart Farming Guidance")
