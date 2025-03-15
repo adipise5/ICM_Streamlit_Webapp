@@ -294,10 +294,3 @@ else:
                 st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop.capitalize()}", use_column_width=True)
             else:
                 st.error("Please fill in all fields.")
-
-    # Footer
-    st.markdown("---")
-    st.markdown("Developed by [Your Name] | Powered by xAI & OpenAI | © 2025")
-
-# Required libraries
-# pip install streamlit requests pillow numpy joblib openai tensorflow plotly pandas
