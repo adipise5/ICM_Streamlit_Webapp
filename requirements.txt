@@ -10,3 +10,4 @@ matplotlib  # For data visualization (optional)
 seaborn  # For better plots (optional)
 openai  # If using AI-based recommendations
 streamlit-lottie
+plotly pandas
