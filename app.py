@@ -80,28 +80,22 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with colorful gradient, animations, and enhanced navigation bar
+# Custom CSS with aesthetic background and centered submit buttons
 st.markdown(
     """
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #a1c4fd 100%);
-            background-size: 200% 200%;
-            animation: gradientAnimation 10s ease infinite;
+            background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
             color: #2b3e50;
             min-height: 100vh;
-        }
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 0%; }
-            50% { background-position: 100% 100%; }
-            100% { background-position: 0% 0%; }
         }
         .main {
             padding: 20px;
             max-width: 600px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.85);
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             animation: fadeIn 1s ease-in;
@@ -139,10 +133,12 @@ st.markdown(
             border-radius: 10px;
             padding: 10px;
             border: none;
-            width: 100%;
+            width: 200px;
             font-size: 16px;
             font-weight: bold;
             transition: transform 0.3s ease, background 0.3s ease;
+            display: block;
+            margin: 0 auto;
         }
         .stButton>button:hover {
             background: linear-gradient(90deg, #FF5722, #FFCA28);
@@ -175,6 +171,7 @@ st.markdown(
             transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
             border: 2px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
         }
         .sidebar .sidebar-content .stButton>button:hover {
             background: rgba(255, 255, 255, 0.4);
@@ -302,25 +299,31 @@ else:
         st.subheader("📊 Statistics")
         st.markdown("<p style='text-align: center; color: #FF5722;'>Track Your Finances 🎉</p>", unsafe_allow_html=True)
 
-        # Expense and Profit Input Form
+        # Expense or Profit Input Form
         with st.form("finance_form"):
-            col1, col2 = st.columns(2)
-            with col1:
+            finance_type = st.selectbox("📋 Select Type:", ["Expense", "Profit"])
+            
+            if finance_type == "Expense":
                 expense_date = st.date_input("📅 Expense Date", value=datetime.today())
                 expense_amount = st.number_input("💸 Expense Amount", min_value=0.0, value=0.0, step=0.1)
                 expense_purpose = st.text_input("📝 Expense For")
-            with col2:
+                submitted = st.form_submit_button("Add Expense 🚀")
+                if submitted:
+                    if expense_amount >= 0 and expense_purpose:
+                        st.session_state.expenses.append({"date": expense_date, "amount": expense_amount, "purpose": expense_purpose})
+                        st.success("✅ Expense added successfully!")
+                    else:
+                        st.error("🚫 Please fill in all fields with valid amounts.")
+            else:
                 profit_date = st.date_input("📅 Profit Date", value=datetime.today())
                 profit_amount = st.number_input("💰 Profit Amount", min_value=0.0, value=0.0, step=0.1)
-            submitted = st.form_submit_button("Add Data 🚀")
-        
-        if submitted:
-            if expense_amount >= 0 and expense_purpose and profit_amount >= 0:
-                st.session_state.expenses.append({"date": expense_date, "amount": expense_amount, "purpose": expense_purpose})
-                st.session_state.profit.append({"date": profit_date, "amount": profit_amount})
-                st.success("✅ Data added successfully!")
-            else:
-                st.error("🚫 Please fill in all fields with valid amounts.")
+                submitted = st.form_submit_button("Add Profit 🚀")
+                if submitted:
+                    if profit_amount >= 0:
+                        st.session_state.profit.append({"date": profit_date, "amount": profit_amount})
+                        st.success("✅ Profit added successfully!")
+                    else:
+                        st.error("🚫 Please enter a valid profit amount.")
 
         # Convert to DataFrames for charting
         df_expenses = pd.DataFrame(st.session_state.expenses)
