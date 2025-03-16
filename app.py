@@ -1,4 +1,5 @@
 import streamlit as st
+from openai import OpenAI
 import requests
 from PIL import Image
 import numpy as np
@@ -19,8 +20,14 @@ load_dotenv()
 st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar_state="expanded")
 
 # xAI API Key from environment variable
-XAI_API_KEY = os.getenv("XAI_API_KEY", "xai-Es0CPO6ARiKBHkmHpO4PdiMGFJUjDDqFq6mNWJeQVLdeF8bv9SpezkYC0nQCC9R3tZChgopAQME9bpmo")
-XAI_API_URL = "https://api.x.ai/v1/completions"  # Hypothetical URL; replace with actual endpoint
+XAI_API_KEY = os.getenv("XAI_API_KEY", "xai-Es0CPO6ARiKBHkmHpO4PdiMGFJUjDDqFq6mNWJeQVLdeF8bv9SpezkYC0nQCC9R3tZChgopAQME9bpmo")  # Replace with your actual xAI API key
+XAI_BASE_URL = "https://api.x.ai/v1"  # Base URL for xAI API
+
+# Initialize OpenAI client for xAI API
+client = OpenAI(
+    api_key=XAI_API_KEY,
+    base_url=XAI_BASE_URL,
+)
 
 # Load ML models with caching and error handling
 @st.cache_resource
@@ -60,18 +67,21 @@ def get_weather(zip_code, country_code="IN"):
 @st.cache_data
 def get_smart_farming_info(crop, country):
     try:
-        headers = {"Authorization": f"Bearer {XAI_API_KEY}", "Content-Type": "application/json"}
-        payload = {
-            "model": "grok",
-            "prompt": f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices.",
-            "max_tokens": 500
-        }
-        response = requests.post(XAI_API_URL, json=payload, headers=headers)
-        response.raise_for_status()
-        data = response.json()
-        return data.get("choices", [{}])[0].get("text", "📝 No guidance available")
+        # Use OpenAI SDK to call xAI API
+        st.write("📡 Making API request to xAI...")
+        completion = client.chat.completions.create(
+            model="grok-2-latest",  # Ensure this model is supported by xAI
+            messages=[
+                {"role": "system", "content": "You are a smart farming expert."},
+                {"role": "user", "content": f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices."}
+            ],
+            max_tokens=500,
+        )
+        guidance = completion.choices[0].message.content
+        return guidance if guidance else "📝 No guidance available"
     except Exception as e:
-        return f"🚨 Error fetching smart farming guidance: {str(e)}"
+        st.error(f"🚨 Error fetching smart farming guidance: {str(e)}")
+        return f"Fallback: Smart farming guidance for {crop} in {country} is not available due to API issues. Please ensure proper irrigation, use balanced NPK fertilizers (20-20-20), and plant during the optimal season (e.g., spring for most crops)."
 
 def predict_disease(image):
     if disease_model is None:
