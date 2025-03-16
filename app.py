@@ -18,7 +18,7 @@ st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar
 
 # xAI API Key from environment variable
 XAI_API_KEY = os.getenv("XAI_API_KEY", "xai-Es0CPO6ARiKBHkmHpO4PdiMGFJUjDDqFq6mNWJeQVLdeF8bv9SpezkYC0nQCC9R3tZChgopAQME9bpmo")
-XAI_API_URL = "https://api.x.ai/v1/completions"  # Hypothetical URL; replace with the actual xAI API endpoint
+XAI_API_URL = "https://api.x.ai/v1/completions"  # Hypothetical URL; replace with actual endpoint
 
 # Load ML models with caching and error handling
 @st.cache_resource
@@ -58,19 +58,15 @@ def get_weather(zip_code, country_code="IN"):
 @st.cache_data
 def get_smart_farming_info(crop, country):
     try:
-        headers = {
-            "Authorization": f"Bearer {XAI_API_KEY}",
-            "Content-Type": "application/json"
-        }
+        headers = {"Authorization": f"Bearer {XAI_API_KEY}", "Content-Type": "application/json"}
         payload = {
-            "model": "grok",  # Assuming "grok" is the model name; adjust as per xAI API docs
+            "model": "grok",
             "prompt": f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices.",
-            "max_tokens": 500  # Adjust based on xAI API requirements
+            "max_tokens": 500
         }
         response = requests.post(XAI_API_URL, json=payload, headers=headers)
-        response.raise_for_status()  # Raise an exception for HTTP errors
+        response.raise_for_status()
         data = response.json()
-        # Adjust the response parsing based on the actual xAI API response structure
         return data.get("choices", [{}])[0].get("text", "No guidance available")
     except Exception as e:
         return f"Error fetching smart farming guidance: {str(e)}"
@@ -82,56 +78,75 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "Disease Name (placeholder)"
 
-# Custom CSS for modern UI
+# Custom CSS for modern, aesthetic UI with consistent colors
 st.markdown(
     """
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f2f5;
+            background-color: #e8f5e9; /* Light green background */
+            color: #2e7d32; /* Dark green text */
         }
         .main {
             padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+            color: #2e7d32; /* Dark green for headings */
+        }
+        .stTextInput>div>input, .stNumberInput>div>input {
+            background-color: #c8e6c9; /* Light green input background */
+            border: 1px solid #4caf50; /* Medium green border */
+            border-radius: 5px;
+            padding: 8px;
+            color: #2e7d32;
+        }
+        .stButton>button {
+            background-color: #4caf50; /* Medium green button */
+            color: white;
+            border-radius: 5px;
+            padding: 10px 20px;
+            border: none;
+            width: 100%;
+        }
+        .stButton>button:hover {
+            background-color: #388e3c; /* Darker green on hover */
         }
         .sidebar .sidebar-content {
-            background-color: #4a90e2;
+            background-color: #4caf50; /* Medium green sidebar */
             color: white;
             padding: 20px;
             border-radius: 10px;
         }
-        .sidebar .sidebar-content .menu-button {
-            background-color: #357abd;
-            color: white;
-            border: none;
-            padding: 10px;
+        .sidebar .sidebar-content .stButton>button {
+            background-color: #388e3c; /* Darker green sidebar buttons */
             margin: 5px 0;
-            border-radius: 5px;
-            width: 100%;
-            text-align: left;
         }
-        .sidebar .sidebar-content .menu-button:hover {
-            background-color: #2e6da4;
-        }
-        .stButton>button {
-            background-color: #4a90e2;
-            color: white;
-            border-radius: 5px;
-            padding: 10px 20px;
-        }
-        .stButton>button:hover {
-            background-color: #357abd;
+        .sidebar .sidebar-content .stButton>button:hover {
+            background-color: #2e7d32; /* Even darker green on hover */
         }
         .card {
             background-color: #ffffff;
             border-radius: 10px;
             padding: 20px;
-            margin: 10px;
+            margin: 10px auto;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             text-align: center;
+            max-width: 300px;
         }
         .card h3 {
-            color: #4a90e2;
+            color: #4caf50;
             margin-bottom: 10px;
+        }
+        .stForm {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
         }
     </style>
     """,
@@ -141,7 +156,7 @@ st.markdown(
 # User registration session
 if 'user_info' not in st.session_state:
     st.title("🌱 Bhoomi - Farmer Registration")
-    with st.form("user_form"):
+    with st.form("user_form", clear_on_submit=True):
         name = st.text_input("Full Name")
         mobile = st.text_input("Mobile Number", help="e.g., 9876543210")
         place = st.text_input("Place")
@@ -150,13 +165,13 @@ if 'user_info' not in st.session_state:
         if name and mobile and place:
             st.session_state.user_info = {"name": name, "mobile": mobile, "place": place}
             st.success("Registration successful! Redirecting to dashboard...")
-            st.session_state.menu = "Home"  # Jump to main app
+            st.session_state.menu = "Home"
             st.rerun()
         else:
             st.error("Please fill in all fields.")
 else:
     st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']}")
-    st.markdown("Your personalized farming dashboard.")
+    st.markdown("<p style='text-align: center;'>Your personalized farming dashboard.</p>", unsafe_allow_html=True)
 
     # Sidebar Navigation
     st.sidebar.title("🌍 Navigation")
@@ -184,30 +199,26 @@ else:
         "Date": ["2025-03-01", "2025-03-02", "2025-03-03", "2025-03-04", "2025-03-05"],
         "Yield": [2, 3, 1, 4, 2]
     })
-    df_income = pd.DataFrame({"Value": [0]})
-    df_expenses = pd.DataFrame({"Value": [0]})
-    df_yield_total = pd.DataFrame({"Value": [0]})
-    df_profit = pd.DataFrame({"Value": [0]})
 
     # Home page with statistics
     if selected_menu == "Home":
         st.subheader("Statistics")
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns([1, 1, 1], gap="medium")
         with col1:
-            st.markdown('<div class="card"><h3>Yield over time</h3></div>', unsafe_allow_html=True)
-            fig = px.line(df_yield, x="Date", y="Yield", title="")
+            st.markdown('<div class="card"><h3>Yield Over Time</h3></div>', unsafe_allow_html=True)
+            fig = px.line(df_yield, x="Date", y="Yield", title="", color_discrete_sequence=["#4caf50"])
             st.plotly_chart(fig, use_container_width=True)
         with col2:
-            st.markdown('<div class="card"><h3>₹</h3><p>Total Income over time</p><p>0</p></div>', unsafe_allow_html=True)
+            st.markdown('<div class="card"><h3>₹ Total Income</h3><p>0</p></div>', unsafe_allow_html=True)
         with col3:
-            st.markdown('<div class="card"><h3>🛒</h3><p>Total Expenses over time</p><p>0</p></div>', unsafe_allow_html=True)
-        col4, col5 = st.columns(2)
+            st.markdown('<div class="card"><h3>🛒 Total Expenses</h3><p>0</p></div>', unsafe_allow_html=True)
+        col4, col5 = st.columns([1, 1], gap="medium")
         with col4:
-            st.markdown('<div class="card"><h3>🌾</h3><p>Total Yield over time</p><p>0</p></div>', unsafe_allow_html=True)
+            st.markdown('<div class="card"><h3>🌾 Total Yield</h3><p>0</p></div>', unsafe_allow_html=True)
         with col5:
-            st.markdown('<div class="card"><h3>💰</h3><p>Total Profit over time</p><p>0</p></div>', unsafe_allow_html=True)
+            st.markdown('<div class="card"><h3>💰 Total Profit</h3><p>0</p></div>', unsafe_allow_html=True)
         st.subheader("Crop Yield Distribution")
-        st.write("Placeholder for distribution chart (to be implemented with real data)")
+        st.markdown("<p style='text-align: center;'>Placeholder for distribution chart (to be implemented with real data)</p>", unsafe_allow_html=True)
 
     elif selected_menu == "Crop Recommendation":
         st.subheader("🌾 Crop Recommendation System")
@@ -271,10 +282,10 @@ else:
                 st.error(weather_data["error"])
             elif weather_data.get('main'):
                 city_name = weather_data.get('name', 'Unknown Location')
-                st.write(f"**Location**: {city_name}")
-                st.write(f"**Temperature**: {weather_data['main']['temp']}°C")
-                st.write(f"**Weather**: {weather_data['weather'][0]['description'].capitalize()}")
-                st.write(f"**Humidity**: {weather_data['main']['humidity']}%")
+                st.markdown(f"<p style='text-align: center;'>**Location**: {city_name}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: center;'>**Temperature**: {weather_data['main']['temp']}°C</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: center;'>**Weather**: {weather_data['weather'][0]['description'].capitalize()}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: center;'>**Humidity**: {weather_data['main']['humidity']}%</p>", unsafe_allow_html=True)
             else:
                 st.error("Could not retrieve weather data.")
 
@@ -306,7 +317,7 @@ else:
             if crop and country:
                 with st.spinner("Fetching guidance..."):
                     guidance = get_smart_farming_info(crop, country)
-                st.markdown(guidance)
+                st.markdown(f"<div style='text-align: center;'>{guidance}</div>", unsafe_allow_html=True)
                 st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"{crop.capitalize()}", use_column_width=True)
             else:
                 st.error("Please fill in all fields.")
