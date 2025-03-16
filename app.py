@@ -1,5 +1,4 @@
 import streamlit as st
-from openai import OpenAI
 import requests
 from PIL import Image
 import numpy as np
@@ -13,21 +12,11 @@ import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime
 
-# Load environment variables
+# Load environment variables (if needed for other APIs, e.g., weather)
 load_dotenv()
 
 # Must be the first Streamlit command
 st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar_state="expanded")
-
-# xAI API Key from environment variable
-XAI_API_KEY = os.getenv("XAI_API_KEY", "xai-Es0CPO6ARiKBHkmHpO4PdiMGFJUjDDqFq6mNWJeQVLdeF8bv9SpezkYC0nQCC9R3tZChgopAQME9bpmo")  # Replace with your actual xAI API key
-XAI_BASE_URL = "https://api.x.ai/v1"  # Base URL for xAI API
-
-# Initialize OpenAI client for xAI API
-client = OpenAI(
-    api_key=XAI_API_KEY,
-    base_url=XAI_BASE_URL,
-)
 
 # Load ML models with caching and error handling
 @st.cache_resource
@@ -64,24 +53,50 @@ def get_weather(zip_code, country_code="IN"):
     except requests.RequestException:
         return {"error": "🌐 Failed to connect to weather service"}
 
+# Static crop information database (sourced from FAO)
+CROP_INFO = {
+    "wheat": {
+        "climate": "Temperate regions, prefers cool and moist weather during vegetative growth, dry and warm weather during grain filling.",
+        "soil": "Well-drained loamy soils, pH 6.0–7.5.",
+        "fertilizers": "Nitrogen (120–150 kg/ha), Phosphorus (60–80 kg/ha), Potassium (40–60 kg/ha). Apply NPK 20-20-20 at planting, followed by split nitrogen applications.",
+        "time_periods": "Sown in autumn (October–November) for winter wheat, spring (March–April) for spring wheat; harvested after 4–5 months.",
+        "best_practices": "Rotate with legumes, ensure proper irrigation (500–800 mm rainfall), control weeds early, and use disease-resistant varieties."
+    },
+    "rice": {
+        "climate": "Tropical and subtropical regions, warm and humid, temperatures 20–38°C.",
+        "soil": "Clayey or loamy soils with good water retention, pH 5.5–7.0.",
+        "fertilizers": "Nitrogen (100–150 kg/ha), Phosphorus (30–50 kg/ha), Potassium (30–50 kg/ha). Apply NPK 15-15-15 at planting, split nitrogen applications during tillering and panicle initiation.",
+        "time_periods": "Sown during the monsoon (June–July), harvested after 4–6 months (November–December).",
+        "best_practices": "Flooded fields for most varieties (irrigated rice), transplant seedlings at 20–30 days, manage pests like rice blast, and ensure 1000–1500 mm water availability."
+    },
+    "maize": {
+        "climate": "Warm weather, 21–30°C, requires frost-free conditions.",
+        "soil": "Well-drained sandy loam to loamy soils, pH 5.8–7.0.",
+        "fertilizers": "Nitrogen (120–180 kg/ha), Phosphorus (60–80 kg/ha), Potassium (40–60 kg/ha). Apply NPK 20-20-20 at planting, top-dress with nitrogen at knee-high stage.",
+        "time_periods": "Sown in spring (April–May), harvested after 3–4 months (August–September).",
+        "best_practices": "Plant in rows with 60–75 cm spacing, irrigate at 600–800 mm, control pests like maize borers, and rotate with legumes to improve soil fertility."
+    }
+}
+
 @st.cache_data
 def get_smart_farming_info(crop, country):
-    try:
-        # Use OpenAI SDK to call xAI API
-        st.write("📡 Making API request to xAI...")
-        completion = client.chat.completions.create(
-            model="grok-2-latest",  # Ensure this model is supported by xAI
-            messages=[
-                {"role": "system", "content": "You are a smart farming expert."},
-                {"role": "user", "content": f"Provide detailed smart farming guidelines for {crop} in {country}, including fertilizers, time periods, and best practices."}
-            ],
-            max_tokens=500,
-        )
-        guidance = completion.choices[0].message.content
-        return guidance if guidance else "📝 No guidance available"
-    except Exception as e:
-        st.error(f"🚨 Error fetching smart farming guidance: {str(e)}")
-        return f"Fallback: Smart farming guidance for {crop} in {country} is not available due to API issues. Please ensure proper irrigation, use balanced NPK fertilizers (20-20-20), and plant during the optimal season (e.g., spring for most crops)."
+    # Normalize crop name to lowercase for lookup
+    crop = crop.lower()
+    
+    if crop not in CROP_INFO:
+        return f"🚫 Sorry, detailed guidance for {crop} is not available in the database. General advice: Use balanced NPK fertilizers (20-20-20), ensure proper irrigation, and plant during the optimal season for your region."
+    
+    crop_data = CROP_INFO[crop]
+    guidance = (
+        f"### Smart Farming Guidance for {crop.capitalize()} in {country}\n\n"
+        f"**Climate Requirements**: {crop_data['climate']}\n\n"
+        f"**Soil Requirements**: {crop_data['soil']}\n\n"
+        f"**Fertilizers**: {crop_data['fertilizers']}\n\n"
+        f"**Time Periods**: {crop_data['time_periods']}\n\n"
+        f"**Best Practices**: {crop_data['best_practices']}\n\n"
+        f"**Note**: Adjust practices based on local conditions in {country}, such as rainfall patterns and temperature variations."
+    )
+    return guidance
 
 def predict_disease(image):
     if disease_model is None:
