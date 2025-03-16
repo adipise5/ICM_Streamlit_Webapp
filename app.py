@@ -7,8 +7,10 @@ import os
 import io
 from tensorflow.keras.preprocessing import image as keras_image
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -78,7 +80,7 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with colorful gradient and animations
+# Custom CSS with colorful gradient, animations, and enhanced navigation bar
 st.markdown(
     """
     <style>
@@ -146,11 +148,13 @@ st.markdown(
             background: linear-gradient(90deg, #FF5722, #FFCA28);
             transform: scale(1.05);
         }
+        /* Enhanced Navigation Bar */
         .sidebar .sidebar-content {
-            background: linear-gradient(135deg, #4CAF50, #2196F3);
+            background: linear-gradient(180deg, #4CAF50 0%, #2196F3 50%, #FF5722 100%);
             color: white;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             animation: slideIn 1s ease-out;
         }
         @keyframes slideIn {
@@ -158,12 +162,41 @@ st.markdown(
             to { transform: translateX(0); }
         }
         .sidebar .sidebar-content .stButton>button {
-            background: linear-gradient(90deg, #2196F3, #FFEB3B);
-            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            margin: 10px 0;
+            border-radius: 25px;
+            padding: 12px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .sidebar .sidebar-content .stButton>button:hover {
-            background: linear-gradient(90deg, #1976D2, #FFC107);
-            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateX(10px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .sidebar .sidebar-content .stButton>button::before {
+            content: '';
+            margin-right: 10px;
+        }
+        .sidebar .sidebar-content h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         .card {
             background: linear-gradient(135deg, #ffffff, #e0f7fa);
@@ -210,6 +243,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Initialize session state for expenses and profit
+if 'expenses' not in st.session_state:
+    st.session_state.expenses = []
+if 'profit' not in st.session_state:
+    st.session_state.profit = []
+
 # User registration session
 if 'user_info' not in st.session_state:
     st.title("🌱 Bhoomi - Farmer Registration 📝")
@@ -231,7 +270,7 @@ else:
     st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']} 👋")
     st.markdown("<p style='text-align: center; color: #FF5722;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
 
-    # Sidebar Navigation
+    # Enhanced Sidebar Navigation
     st.sidebar.title("🌍 Navigation")
     if 'menu' not in st.session_state:
         st.session_state['menu'] = "Home"
@@ -258,10 +297,74 @@ else:
         "Yield": [2, 3, 1, 4, 2]
     })
 
-    # Home page with statistics
+    # Home page with statistics, expense, and profit input
     if selected_menu == "Home":
         st.subheader("📊 Statistics")
-        col1, col2, col3 = st.columns([1, 1, 1], gap="medium")
+        st.markdown("<p style='text-align: center; color: #FF5722;'>Track Your Finances 🎉</p>", unsafe_allow_html=True)
+
+        # Expense and Profit Input Form
+        with st.form("finance_form"):
+            col1, col2 = st.columns(2)
+            with col1:
+                expense_date = st.date_input("📅 Expense Date", value=datetime.today())
+                expense_amount = st.number_input("💸 Expense Amount", min_value=0.0, value=0.0, step=0.1)
+                expense_purpose = st.text_input("📝 Expense For")
+            with col2:
+                profit_date = st.date_input("📅 Profit Date", value=datetime.today())
+                profit_amount = st.number_input("💰 Profit Amount", min_value=0.0, value=0.0, step=0.1)
+            submitted = st.form_submit_button("Add Data 🚀")
+        
+        if submitted:
+            if expense_amount >= 0 and expense_purpose and profit_amount >= 0:
+                st.session_state.expenses.append({"date": expense_date, "amount": expense_amount, "purpose": expense_purpose})
+                st.session_state.profit.append({"date": profit_date, "amount": profit_amount})
+                st.success("✅ Data added successfully!")
+            else:
+                st.error("🚫 Please fill in all fields with valid amounts.")
+
+        # Convert to DataFrames for charting
+        df_expenses = pd.DataFrame(st.session_state.expenses)
+        df_profit = pd.DataFrame(st.session_state.profit)
+
+        # Aggregate data by date
+        if not df_expenses.empty:
+            df_expenses = df_expenses.groupby("date").agg({"amount": "sum"}).reset_index()
+        if not df_profit.empty:
+            df_profit = df_profit.groupby("date").agg({"amount": "sum"}).reset_index()
+
+        # Charts
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("💸 Expenses Over Time")
+            if not df_expenses.empty:
+                fig_expenses = px.line(df_expenses, x="date", y="amount", title="Expenses", color_discrete_sequence=["#FF5722"])
+                st.plotly_chart(fig_expenses, use_container_width=True)
+            else:
+                st.write("📊 No expense data to display.")
+
+        with col2:
+            st.subheader("💰 Profit Over Time")
+            if not df_profit.empty:
+                fig_profit = px.line(df_profit, x="date", y="amount", title="Profit", color_discrete_sequence=["#4CAF50"])
+                st.plotly_chart(fig_profit, use_container_width=True)
+            else:
+                st.write("📊 No profit data to display.")
+
+        # Combined Chart
+        st.subheader("📈 Expenses vs Profit")
+        if not df_expenses.empty and not df_profit.empty:
+            # Merge data on date, filling missing dates with 0
+            df_combined = pd.merge(df_expenses, df_profit, on="date", how="outer", suffixes=('_exp', '_prof')).fillna(0)
+            fig_combined = go.Figure()
+            fig_combined.add_trace(go.Scatter(x=df_combined["date"], y=df_combined["amount_exp"], mode='lines', name='Expenses', line=dict(color='#FF5722')))
+            fig_combined.add_trace(go.Scatter(x=df_combined["date"], y=df_combined["amount_prof"], mode='lines', name='Profit', line=dict(color='#4CAF50')))
+            fig_combined.update_layout(title="Expenses vs Profit", xaxis_title="Date", yaxis_title="Amount")
+            st.plotly_chart(fig_combined, use_container_width=True)
+        else:
+            st.write("📊 No data to display for combined chart.")
+
+        # Statistics Cards
+        col1, col2, col3 = st.columns(3)
         with col1:
             st.markdown('<div class="card"><h3>📈 Yield Over Time</h3></div>', unsafe_allow_html=True)
             fig = px.line(df_yield, x="Date", y="Yield", title="", color_discrete_sequence=["#FF5722"])
@@ -270,13 +373,11 @@ else:
             st.markdown('<div class="card"><h3>💰 Total Income</h3><p>0</p></div>', unsafe_allow_html=True)
         with col3:
             st.markdown('<div class="card"><h3>🛒 Total Expenses</h3><p>0</p></div>', unsafe_allow_html=True)
-        col4, col5 = st.columns([1, 1], gap="medium")
+        col4, col5 = st.columns(2)
         with col4:
             st.markdown('<div class="card"><h3>🌾 Total Yield</h3><p>0</p></div>', unsafe_allow_html=True)
         with col5:
             st.markdown('<div class="card"><h3>📈 Total Profit</h3><p>0</p></div>', unsafe_allow_html=True)
-        st.subheader("🌾 Crop Yield Distribution")
-        st.markdown("<p style='text-align: center;'>📊 Placeholder for distribution chart (to be implemented with real data)</p>", unsafe_allow_html=True)
 
     elif selected_menu == "Crop Recommendation":
         st.subheader("🌾 Crop Recommendation System")
