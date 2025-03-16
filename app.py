@@ -310,8 +310,9 @@ else:
                 submitted = st.form_submit_button("Add Expense 🚀")
                 if submitted:
                     if expense_amount >= 0 and expense_purpose:
-                        st.session_state.expenses.append({"date": expense_date, "amount": expense_amount, "purpose": expense_purpose})
+                        st.session_state.expenses.append({"date": expense_date.strftime('%Y-%m-%d'), "amount": expense_amount, "purpose": expense_purpose})
                         st.success("✅ Expense added successfully!")
+                        st.rerun()  # Force rerender to update charts
                     else:
                         st.error("🚫 Please fill in all fields with valid amounts.")
             else:
@@ -320,8 +321,9 @@ else:
                 submitted = st.form_submit_button("Add Profit 🚀")
                 if submitted:
                     if profit_amount >= 0:
-                        st.session_state.profit.append({"date": profit_date, "amount": profit_amount})
+                        st.session_state.profit.append({"date": profit_date.strftime('%Y-%m-%d'), "amount": profit_amount})
                         st.success("✅ Profit added successfully!")
+                        st.rerun()  # Force rerender to update charts
                     else:
                         st.error("🚫 Please enter a valid profit amount.")
 
@@ -329,11 +331,13 @@ else:
         df_expenses = pd.DataFrame(st.session_state.expenses)
         df_profit = pd.DataFrame(st.session_state.profit)
 
-        # Aggregate data by date
+        # Ensure date column is in datetime format
         if not df_expenses.empty:
-            df_expenses = df_expenses.groupby("date").agg({"amount": "sum"}).reset_index()
+            df_expenses['date'] = pd.to_datetime(df_expenses['date'])
+            df_expenses = df_expenses.groupby("date", as_index=False).agg({"amount": "sum"}).sort_values("date")
         if not df_profit.empty:
-            df_profit = df_profit.groupby("date").agg({"amount": "sum"}).reset_index()
+            df_profit['date'] = pd.to_datetime(df_profit['date'])
+            df_profit = df_profit.groupby("date", as_index=False).agg({"amount": "sum"}).sort_values("date")
 
         # Charts
         col1, col2 = st.columns(2)
@@ -341,6 +345,7 @@ else:
             st.subheader("💸 Expenses Over Time")
             if not df_expenses.empty:
                 fig_expenses = px.line(df_expenses, x="date", y="amount", title="Expenses", color_discrete_sequence=["#FF5722"])
+                fig_expenses.update_traces(mode='lines+markers')  # Add markers for clarity
                 st.plotly_chart(fig_expenses, use_container_width=True)
             else:
                 st.write("📊 No expense data to display.")
@@ -349,18 +354,19 @@ else:
             st.subheader("💰 Profit Over Time")
             if not df_profit.empty:
                 fig_profit = px.line(df_profit, x="date", y="amount", title="Profit", color_discrete_sequence=["#4CAF50"])
+                fig_profit.update_traces(mode='lines+markers')  # Add markers for clarity
                 st.plotly_chart(fig_profit, use_container_width=True)
             else:
                 st.write("📊 No profit data to display.")
 
         # Combined Chart
         st.subheader("📈 Expenses vs Profit")
-        if not df_expenses.empty and not df_profit.empty:
+        if not df_expenses.empty or not df_profit.empty:
             # Merge data on date, filling missing dates with 0
             df_combined = pd.merge(df_expenses, df_profit, on="date", how="outer", suffixes=('_exp', '_prof')).fillna(0)
             fig_combined = go.Figure()
-            fig_combined.add_trace(go.Scatter(x=df_combined["date"], y=df_combined["amount_exp"], mode='lines', name='Expenses', line=dict(color='#FF5722')))
-            fig_combined.add_trace(go.Scatter(x=df_combined["date"], y=df_combined["amount_prof"], mode='lines', name='Profit', line=dict(color='#4CAF50')))
+            fig_combined.add_trace(go.Scatter(x=df_combined["date"], y=df_combined["amount_exp"], mode='lines+markers', name='Expenses', line=dict(color='#FF5722')))
+            fig_combined.add_trace(go.Scatter(x=df_combined["date"], y=df_combined["amount_prof"], mode='lines+markers', name='Profit', line=dict(color='#4CAF50')))
             fig_combined.update_layout(title="Expenses vs Profit", xaxis_title="Date", yaxis_title="Amount")
             st.plotly_chart(fig_combined, use_container_width=True)
         else:
