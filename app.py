@@ -449,7 +449,7 @@ else:
         st.subheader("📊 Crop Yield Prediction")
         st.markdown("<p style='text-align: center; color: #FF5722;'>Enter Crop Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("yield_form"):
-            countries = ["Albania", "India", "Brazil", "USA", "Australia"]
+            countries = ["India", "Brazil", "USA", "Australia", "Albania"]
             country = st.selectbox("🌍 Select Country:", countries)
             crops = ["Maize", "Wheat", "Rice", "Soybean", "Barley"]
             crop = st.selectbox("🌾 Select Crop:", crops)
