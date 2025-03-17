@@ -457,8 +457,12 @@ else:
             temparature = st.number_input("🌡️ Temparature (°C)", min_value=0.0, max_value=50.0, value=25.0, step=0.1)
             humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
             moisture = st.number_input("💦 Moisture (%)", min_value=0.0, max_value=100.0, value=30.0, step=0.1)
-            soil_type = st.selectbox("🌍 Soil Type", ["Sandy", "Loamy", "Black", "Red", "Clayey"])
-            crop_type = st.selectbox("🌾 Crop Type", ["Maize", "Sugarcane", "Cotton", "Tobacco", "Paddy", "Barley", "Wheat", "Millets", "Oil seeds", "Pulses", "Ground Nuts"])
+            col1, col2 = st.columns(2)
+            with col1:
+                 soil_type = st.selectbox("🌍 Soil Type", ["Sandy", "Loamy", "Black", "Red", "Clayey"])
+            with col2:
+                crop_type = st.selectbox("🌾 Crop Type", ["Maize", "Sugarcane", "Cotton", "Tobacco", "Paddy", "Barley", "Wheat", "Millets", "Oil seeds", "Pulses", "Ground Nuts"])
+            
             nitrogen = st.number_input("🌿 Nitrogen (N) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
             potassium = st.number_input("🌿 Potassium (K) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
             phosphorous = st.number_input("🌱 Phosphorous (P) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
