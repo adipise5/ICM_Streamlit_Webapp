@@ -101,7 +101,7 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with nature-inspired textured background and smaller input boxes
+# Custom CSS with nature-inspired textured background, smaller centered forms, and smaller input boxes
 st.markdown(
     """
     <style>
@@ -182,6 +182,21 @@ st.markdown(
             background: linear-gradient(90deg, #388E3C, #689F38);
             transform: scale(1.05);
         }
+        /* Smaller and centered forms */
+        .stForm {
+            background: rgba(255, 255, 255, 0.98); /* Light mode */
+            padding: 15px; /* Reduced padding */
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            width: 300px; /* Smaller fixed width */
+            margin: 0 auto; /* Center the form */
+        }
+        @media (prefers-color-scheme: dark) {
+            .stForm {
+                background: rgba(40, 44, 52, 0.98); /* Dark mode */
+            }
+        }
         /* Sidebar */
         [data-testid="stSidebar"] > div:first-child {
             background: linear-gradient(180deg, #4CAF50, #388E3C, #2E7D32);
@@ -208,18 +223,6 @@ st.markdown(
             color: white;
             text-align: center;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        .stForm {
-            background: rgba(255, 255, 255, 0.98); /* Light mode */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        @media (prefers-color-scheme: dark) {
-            .stForm {
-                background: rgba(40, 44, 52, 0.98); /* Dark mode */
-            }
         }
         .stImage {
             border-radius: 10px;
