@@ -7,12 +7,11 @@ import os
 import io
 from tensorflow.keras.preprocessing import image as keras_image
 import plotly.express as px
-import plotly.graph_objects as go
 import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime
 
-# Load environment variables (if needed for other APIs, e.g., weather)
+# Load environment variables (if needed)
 load_dotenv()
 
 # Must be the first Streamlit command
@@ -102,65 +101,42 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with new background image and support for dark/light modes
+# Custom CSS with background image and dark/light mode support
 st.markdown(
     """
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
+        /* Apply background to the entire app */
+        [data-testid="stAppViewContainer"] {
             background: url('https://media.istockphoto.com/id/1463452333/photo/smart-farming-holding-young-plant-smart-farming-and-precision-agriculture-4-0-agriculture.jpg?s=2048x2048&w=is&k=20&c=4p5YZnsEsVrw4qWHHg6DSYQ8kPissgWnCtYpmyeq8q0=') no-repeat center center fixed;
             background-size: cover;
-            color: #2b3e50;
-            min-height: 100vh;
         }
-        /* Main content container */
-        .main {
+        /* Main content area */
+        [data-testid="stAppViewContainer"] > .main {
+            background: rgba(255, 255, 255, 0.85); /* Light mode semi-transparent */
             padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.85); /* Light mode */
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 1s ease-in;
+            color: #2b3e50; /* Dark text for light mode */
         }
         /* Dark mode adjustments */
         @media (prefers-color-scheme: dark) {
-            .main {
-                background: rgba(40, 44, 52, 0.85); /* Dark mode */
-                color: #f5f5f5;
+            [data-testid="stAppViewContainer"] > .main {
+                background: rgba(40, 44, 52, 0.85); /* Dark mode semi-transparent */
+                color: #f5f5f5; /* Light text for dark mode */
             }
             h1, h2, h3, h4, h5, h6 {
                 color: #f5f5f5;
             }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            .stTextInput > div > input, .stNumberInput > div > input, .stSelectbox > div > div {
+                background-color: #333;
+                color: #f5f5f5;
+            }
         }
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
             color: #2b3e50; /* Light mode */
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        .stSelectbox, .stTextInput>div>input, .stNumberInput>div>input {
-            background-color: #ffffff; /* Light mode */
-            border: 2px solid #4CAF50;
-            border-radius: 10px;
-            padding: 5px;
-            color: #2b3e50;
-            font-size: 14px;
-            width: 100%;
-            transition: border-color 0.3s ease;
-        }
-        @media (prefers-color-scheme: dark) {
-            .stSelectbox, .stTextInput>div>input, .stNumberInput>div>input {
-                background-color: #333;
-                color: #f5f5f5;
-            }
-        }
-        .stSelectbox:hover, .stTextInput:hover>div>input, .stNumberInput:hover>div>input {
-            border-color: #FF5722;
         }
         .stButton>button {
             background: linear-gradient(90deg, #4CAF50, #FFEB3B);
@@ -180,19 +156,13 @@ st.markdown(
             transform: scale(1.05);
         }
         /* Sidebar */
-        .sidebar .sidebar-content {
+        [data-testid="stSidebar"] > div:first-child {
             background: linear-gradient(180deg, #4CAF50 0%, #2196F3 50%, #FF5722 100%);
-            color: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            animation: slideIn 1s ease-out;
         }
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-        .sidebar .sidebar-content .stButton>button {
+        [data-testid="stSidebar"] .stButton>button {
             background: rgba(255, 255, 255, 0.2);
             color: white;
             margin: 10px 0;
@@ -200,55 +170,32 @@ st.markdown(
             padding: 12px 15px;
             font-size: 16px;
             font-weight: bold;
-            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 100%;
         }
-        .sidebar .sidebar-content .stButton>button:hover {
+        [data-testid="stSidebar"] .stButton>button:hover {
             background: rgba(255, 255, 255, 0.4);
             transform: translateX(10px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .sidebar .sidebar-content h1 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
+        [data-testid="stSidebar"] h1 {
             color: white;
+            text-align: center;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
         .stForm {
             background: rgba(255, 255, 255, 0.95); /* Light mode */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            animation: bounceIn 1s ease-out;
         }
         @media (prefers-color-scheme: dark) {
             .stForm {
                 background: rgba(40, 44, 52, 0.95); /* Dark mode */
             }
         }
-        @keyframes bounceIn {
-            0% { transform: scale(0.9); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
         .stImage {
             border-radius: 10px;
             margin: 10px auto;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            animation: fadeInImage 1s ease-in;
-        }
-        @keyframes fadeInImage {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
     </style>
     """,
@@ -282,7 +229,7 @@ else:
     st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']} 👋")
     st.markdown("<p style='text-align: center; color: #FF5722;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
 
-    # Enhanced Sidebar Navigation
+    # Sidebar Navigation
     st.sidebar.title("🌍 Navigation")
     if 'menu' not in st.session_state:
         st.session_state['menu'] = "Home"
@@ -303,7 +250,7 @@ else:
 
     selected_menu = st.session_state['menu']
 
-    # Home page with expenses and profit input
+    # Home page with only expense and profit charts
     if selected_menu == "Home":
         st.subheader("📊 Financial Overview")
         st.markdown("<p style='text-align: center; color: #FF5722;'>Track Your Finances 🎉</p>", unsafe_allow_html=True)
@@ -347,7 +294,7 @@ else:
             df_profit['date'] = pd.to_datetime(df_profit['date'])
             df_profit = df_profit.groupby("date", as_index=False).agg({"amount": "sum"}).sort_values("date")
 
-        # Charts
+        # Display charts
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("💸 Expenses Over Time")
@@ -357,7 +304,6 @@ else:
                 st.plotly_chart(fig_expenses, use_container_width=True)
             else:
                 st.write("📊 No expense data to display.")
-
         with col2:
             st.subheader("💰 Profit Over Time")
             if not df_profit.empty:
