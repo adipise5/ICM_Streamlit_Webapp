@@ -189,7 +189,7 @@ st.markdown(
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            width: 300px; /* Smaller fixed width */
+            width: 500px; /* Smaller fixed width */
             margin: 0 auto; /* Center the form */
         }
         @media (prefers-color-scheme: dark) {
