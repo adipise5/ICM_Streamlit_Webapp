@@ -101,42 +101,50 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with background image and dark/light mode support
+# Custom CSS with unique gradient background and animations
 st.markdown(
     """
     <style>
-        /* Apply background to the entire app */
+        /* Unique animated gradient background */
         [data-testid="stAppViewContainer"] {
-            background: url('https://media.istockphoto.com/id/1463452333/photo/smart-farming-holding-young-plant-smart-farming-and-precision-agriculture-4-0-agriculture.jpg?s=2048x2048&w=is&k=20&c=4p5YZnsEsVrw4qWHHg6DSYQ8kPissgWnCtYpmyeq8q0=') no-repeat center center fixed;
-            background-size: cover;
+            background: linear-gradient(45deg, #4CAF50, #2196F3, #FF5722, #FFEB3B);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
         }
         /* Main content area */
         [data-testid="stAppViewContainer"] > .main {
-            background: rgba(255, 255, 255, 0.85); /* Light mode semi-transparent */
+            background: rgba(255, 255, 255, 0.9); /* Light mode */
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            color: #2b3e50; /* Dark text for light mode */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            color: #2b3e50;
+            transition: all 0.3s ease;
         }
         /* Dark mode adjustments */
         @media (prefers-color-scheme: dark) {
             [data-testid="stAppViewContainer"] > .main {
-                background: rgba(40, 44, 52, 0.85); /* Dark mode semi-transparent */
-                color: #f5f5f5; /* Light text for dark mode */
+                background: rgba(40, 44, 52, 0.9); /* Dark mode */
+                color: #f5f5f5;
             }
             h1, h2, h3, h4, h5, h6 {
                 color: #f5f5f5;
             }
             .stTextInput > div > input, .stNumberInput > div > input, .stSelectbox > div > div {
-                background-color: #333;
+                background-color: #555;
                 color: #f5f5f5;
+                border: 1px solid #FF5722;
             }
         }
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
             color: #2b3e50; /* Light mode */
             font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
         }
         .stButton>button {
             background: linear-gradient(90deg, #4CAF50, #FFEB3B);
@@ -150,6 +158,7 @@ st.markdown(
             transition: transform 0.3s ease, background 0.3s ease;
             display: block;
             margin: 0 auto;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .stButton>button:hover {
             background: linear-gradient(90deg, #FF5722, #FFCA28);
@@ -157,10 +166,10 @@ st.markdown(
         }
         /* Sidebar */
         [data-testid="stSidebar"] > div:first-child {
-            background: linear-gradient(180deg, #4CAF50 0%, #2196F3 50%, #FF5722 100%);
+            background: linear-gradient(180deg, #4CAF50, #2196F3, #FF5722);
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         [data-testid="stSidebar"] .stButton>button {
             background: rgba(255, 255, 255, 0.2);
@@ -171,6 +180,7 @@ st.markdown(
             font-size: 16px;
             font-weight: bold;
             width: 100%;
+            transition: all 0.3s ease;
         }
         [data-testid="stSidebar"] .stButton>button:hover {
             background: rgba(255, 255, 255, 0.4);
@@ -186,6 +196,7 @@ st.markdown(
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
         @media (prefers-color-scheme: dark) {
             .stForm {
@@ -195,7 +206,7 @@ st.markdown(
         .stImage {
             border-radius: 10px;
             margin: 10px auto;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
     </style>
     """,
