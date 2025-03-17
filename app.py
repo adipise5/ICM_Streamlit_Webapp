@@ -432,19 +432,13 @@ else:
 
         # Navigation Items with Dropdown
         nav_items = {
-            "Home": "🏠 Home",
-            "Crop Management": {
+                "Home": "🏠 Home",
                 "Crop Recommendation": "🌾 Crop Recommendation",
                 "Identify Plant Disease": "🦠 Identify Plant Disease",
                 "Crop Yield Prediction": "📊 Crop Yield Prediction"
-            },
-            "Environmental Data": {
                 "Today's Weather": "🌤️ Today's Weather"
-            },
-            "Resource Management": {
                 "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
                 "Smart Farming Guidance": "📚 Smart Farming Guidance"
-            }
         }
 
         if 'menu' not in st.session_state:
