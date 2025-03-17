@@ -107,169 +107,298 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with updated sidebar navigation
+# Custom CSS and JavaScript for animated navbar
 st.markdown(
     """
     <style>
-        /* Nature-inspired textured background */
-        [data-testid="stAppViewContainer"] {
-            background-color: #e6e8d5; /* Soft earthy beige */
-            background-image: radial-gradient(circle, rgba(76, 175, 80, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px; /* Subtle texture */
+        /* Sticky Navigation */
+        [data-testid="stSidebar"] {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: transform 0.3s ease, background-color 0.3s ease;
         }
-        /* Main content area */
+
+        /* Navbar Container */
+        .navbar {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            padding: 15px 20px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Navigation Items */
+        .nav-item {
+            display: inline-block;
+            margin: 0 15px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            color: #FFD700; /* Gold hover effect */
+            transform: scale(1.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        /* Dropdown Support */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #2E7D32;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            z-index: 1;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #388E3C;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Dark/Light Mode Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            color: #FFD700;
+        }
+
+        /* Mobile-Friendly Adjustments */
+        @media (max-width: 768px) {
+            .nav-item {
+                display: block;
+                margin: 10px 0;
+                text-align: center;
+            }
+            .dropdown-content {
+                position: relative;
+                width: 100%;
+                box-shadow: none;
+            }
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(5px); }
+            to { transform: translateY(0); }
+        }
+
+        /* Dark Mode */
+        [data-testid="stAppViewContainer"].dark-mode {
+            background-color: #2e2e2e;
+            background-image: radial-gradient(circle, rgba(76, 175, 80, 0.2) 1px, transparent 1px);
+        }
+
+        [data-testid="stAppViewContainer"] > .main.dark-mode {
+            background: rgba(40, 44, 52, 0.95);
+            color: #d4e6d5;
+        }
+
+        .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6 {
+            color: #d4e6d5;
+        }
+
+        .dark-mode .stTextInput > div > input, .dark-mode .stNumberInput > div > input, .dark-mode .stSelectbox > div > div {
+            background-color: #555;
+            color: #d4e6d5;
+            border: 1px solid #4CAF50;
+        }
+
+        .dark-mode .navbar {
+            background: linear-gradient(135deg, #2E7D32, #1B5E20);
+        }
+
+        /* Main Content Styling */
         [data-testid="stAppViewContainer"] > .main {
-            background: rgba(255, 255, 255, 0.95); /* Light mode */
+            background: rgba(255, 255, 255, 0.95);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            color: #3a4f41; /* Earthy green text */
+            color: #3a4f41;
             transition: all 0.3s ease;
         }
-        /* Dark mode adjustments */
-        @media (prefers-color-scheme: dark) {
-            [data-testid="stAppViewContainer"] {
-                background-color: #2e2e2e; /* Dark earthy gray */
-                background-image: radial-gradient(circle, rgba(76, 175, 80, 0.2) 1px, transparent 1px);
-            }
-            [data-testid="stAppViewContainer"] > .main {
-                background: rgba(40, 44, 52, 0.95); /* Dark mode */
-                color: #d4e6d5; /* Light earthy green text */
-            }
-            h1, h2, h3, h4, h5, h6 {
-                color: #d4e6d5;
-            }
-            .stTextInput > div > input, .stNumberInput > div > input, .stSelectbox > div > div {
-                background-color: #555;
-                color: #d4e6d5;
-                border: 1px solid #4CAF50;
-            }
-        }
+
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
-            color: #3a4f41; /* Light mode earthy green */
+            color: #3a4f41;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
-        /* Smaller input boxes */
+
         .stTextInput > div > input, .stNumberInput > div > input {
-            width: 150px; /* Reduced width */
-            padding: 4px; /* Reduced padding */
-            font-size: 12px; /* Smaller font size */
+            width: 150px;
+            padding: 4px;
+            font-size: 12px;
             border-radius: 8px;
             border: 1px solid #4CAF50;
-            background-color: #fff; /* Light mode */
+            background-color: #fff;
             color: #3a4f41;
         }
+
         .stSelectbox > div > div {
-            width: 150px; /* Reduced width */
-            padding: 4px; /* Reduced padding */
-            font-size: 12px; /* Smaller font size */
+            width: 150px;
+            padding: 4px;
+            font-size: 12px;
             border-radius: 8px;
             border: 1px solid #4CAF50;
-            background-color: #fff; /* Light mode */
+            background-color: #fff;
             color: #3a4f41;
         }
+
         .stButton>button {
             background: linear-gradient(90deg, #4CAF50, #8BC34A);
             color: white;
             border-radius: 10px;
-            padding: 8px; /* Slightly smaller padding */
+            padding: 8px;
             border: none;
-            width: 150px; /* Match input box width */
-            font-size: 14px; /* Slightly smaller font */
+            width: 150px;
+            font-size: 14px;
             font-weight: bold;
             transition: transform 0.3s ease, background 0.3s ease;
             display: block;
             margin: 0 auto;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
+
         .stButton>button:hover {
             background: linear-gradient(90deg, #388E3C, #689F38);
             transform: scale(1.05);
         }
-        /* Smaller and centered forms */
+
         .stForm {
-            background: rgba(255, 255, 255, 0.98); /* Light mode */
-            padding: 20px; /* Reduced padding */
+            background: rgba(255, 255, 255, 0.98);
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            width: 500px; /* Smaller fixed width */
-            margin: 0 auto; /* Center the form */
+            width: 500px;
+            margin: 0 auto;
         }
-        @media (prefers-color-scheme: dark) {
-            .stForm {
-                background: rgba(40, 44, 52, 0.98); /* Dark mode */
-            }
+
+        .dark-mode .stForm {
+            background: rgba(40, 44, 52, 0.98);
         }
-        /* Modern Sidebar Navigation */
-        [data-testid="stSidebar"] > div:first-child {
-            background: linear-gradient(180deg, #4CAF50, #388E3C, #2E7D32);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        [data-testid="stSidebar"] h1 {
-            color: white;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            margin-bottom: 20px;
-        }
-        /* Style the selectbox to look modern */
-        [data-testid="stSidebar"] .stSelectbox > div > div {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-        [data-testid="stSidebar"] .stSelectbox > div > div:hover {
-            background: rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-        }
+
         .stImage {
             border-radius: 10px;
             margin: 10px auto;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-        /* Table styling */
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
         }
+
         th, td {
             padding: 10px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
+
         th {
             background-color: #4CAF50;
             color: white;
         }
+
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
+
         tr:hover {
             background-color: #f1f1f1;
         }
+
+        .dark-mode table {
+            background-color: #444;
+        }
+
+        .dark-mode th {
+            background-color: #2E7D32;
+        }
+
+        .dark-mode tr:nth-child(even) {
+            background-color: #333;
+        }
+
+        .dark-mode tr:hover {
+            background-color: #555;
+        }
     </style>
+
+    <script>
+        // Dark/Light Mode Toggle Functionality
+        function toggleTheme() {
+            const app = document.querySelector('[data-testid="stAppViewContainer"]');
+            app.classList.toggle('dark-mode');
+            const isDarkMode = app.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Load theme from localStorage on page load
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme');
+            const app = document.querySelector('[data-testid="stAppViewContainer"]');
+            if (savedTheme === 'dark') {
+                app.classList.add('dark-mode');
+            }
+        };
+    </script>
     """,
     unsafe_allow_html=True
 )
 
-# Initialize session state for expenses and profit
+# Initialize session state for expenses, profit, and theme
 if 'expenses' not in st.session_state:
     st.session_state.expenses = []
 if 'profit' not in st.session_state:
     st.session_state.profit = []
+if 'theme' not in st.session_state:
+    st.session_state.theme = 'light'  # Default theme
 
-# User registration session (email removed)
+# User registration session
 if 'user_info' not in st.session_state:
     st.title("🌱 Bhoomi - Farmer Registration 📝")
     st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Farmer Details Below 🎉</p>", unsafe_allow_html=True)
@@ -290,35 +419,59 @@ else:
     st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']} 👋")
     st.markdown("<p style='text-align: center; color: #4CAF50;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
 
-    # Modern Sidebar Navigation with Dropdown
-    st.sidebar.title("🌍 Navigation")
-    if 'menu' not in st.session_state:
-        st.session_state['menu'] = "Home"
+    # Modern Animated Navigation Bar
+    with st.sidebar:
+        st.markdown('<div class="navbar">', unsafe_allow_html=True)
+        st.markdown('<h1 style="margin: 0;">🌍 Navigation</h1>', unsafe_allow_html=True)
+        
+        # Theme Toggle Button
+        st.markdown(
+            '<div class="theme-toggle" onclick="toggleTheme()">💡</div>',
+            unsafe_allow_html=True
+        )
 
-    menu_options = {
-        "Home": "🏠 Home",
-        "Crop Recommendation": "🌾 Crop Recommendation",
-        "Identify Plant Disease": "🦠 Identify Plant Disease",
-        "Crop Yield Prediction": "📊 Crop Yield Prediction",
-        "Today's Weather": "🌤️ Today's Weather",
-        "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
-        "Smart Farming Guidance": "📚 Smart Farming Guidance"
-    }
-    
-    selected_menu = st.sidebar.selectbox(
-        "Select a Page",
-        list(menu_options.keys()),
-        format_func=lambda x: menu_options[x],
-        index=list(menu_options.keys()).index(st.session_state['menu'])
-    )
-    st.session_state['menu'] = selected_menu
+        # Navigation Items with Dropdown
+        nav_items = {
+            "Home": "🏠 Home",
+            "Crop Management": {
+                "Crop Recommendation": "🌾 Crop Recommendation",
+                "Identify Plant Disease": "🦠 Identify Plant Disease",
+                "Crop Yield Prediction": "📊 Crop Yield Prediction"
+            },
+            "Environmental Data": {
+                "Today's Weather": "🌤️ Today's Weather"
+            },
+            "Resource Management": {
+                "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
+                "Smart Farming Guidance": "📚 Smart Farming Guidance"
+            }
+        }
 
-    # Home page with tables instead of charts
+        if 'menu' not in st.session_state:
+            st.session_state['menu'] = "Home"
+
+        for key, value in nav_items.items():
+            if isinstance(value, dict):
+                st.markdown(f'<div class="dropdown">', unsafe_allow_html=True)
+                st.markdown(f'<span class="nav-item">{value[list(value.keys())[0]]}</span>', unsafe_allow_html=True)
+                st.markdown('<div class="dropdown-content">', unsafe_allow_html=True)
+                for sub_key, sub_value in value.items():
+                    if st.button(sub_value, key=sub_key):
+                        st.session_state['menu'] = sub_key
+                        st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                if st.button(value, key=key):
+                    st.session_state['menu'] = key
+                    st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # Page Content
     if selected_menu == "Home":
         st.subheader("📊 Financial Overview")
         st.markdown("<p style='text-align: center; color: #4CAF50;'>Track Your Finances 🎉</p>", unsafe_allow_html=True)
 
-        # Expense or Profit Input Form
         with st.form("finance_form"):
             finance_type = st.selectbox("📋 Select Type:", ["Expense", "Profit"])
             if finance_type == "Expense":
@@ -345,9 +498,7 @@ else:
                     else:
                         st.error("🚫 Please enter a valid profit amount.")
 
-        # Display tables with totals
         col1, col2 = st.columns(2)
-        
         with col1:
             st.subheader("💸 Expenses")
             if st.session_state.expenses:
@@ -357,7 +508,6 @@ else:
                 st.markdown(f"**Total Expense:** ₹{total_expense:.2f}")
             else:
                 st.write("📊 No expense data to display.")
-        
         with col2:
             st.subheader("💰 Profits")
             if st.session_state.profit:
@@ -419,7 +569,7 @@ else:
             submitted = st.form_submit_button("Predict Yield 🚀")
         if submitted:
             if yield_model:
-                if all([rainfall >= 0, pesticide >= 0, temperature >= 0]):  # Fixed validation
+                if all([rainfall >= 0, pesticide >= 0, temperature >= 0]):
                     features = np.array([[rainfall, pesticide, temperature]])
                     with st.spinner("🔍 Predicting yield..."):
                         prediction = yield_model.predict(features)
@@ -459,10 +609,9 @@ else:
             moisture = st.number_input("💦 Moisture (%)", min_value=0.0, max_value=100.0, value=30.0, step=0.1)
             col1, col2 = st.columns(2)
             with col1:
-                 soil_type = st.selectbox("🌍 Soil Type", ["Sandy", "Loamy", "Black", "Red", "Clayey"])
+                soil_type = st.selectbox("🌍 Soil Type", ["Sandy", "Loamy", "Black", "Red", "Clayey"])
             with col2:
                 crop_type = st.selectbox("🌾 Crop Type", ["Maize", "Sugarcane", "Cotton", "Tobacco", "Paddy", "Barley", "Wheat", "Millets", "Oil seeds", "Pulses", "Ground Nuts"])
-            
             nitrogen = st.number_input("🌿 Nitrogen (N) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
             potassium = st.number_input("🌿 Potassium (K) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
             phosphorous = st.number_input("🌱 Phosphorous (P) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
@@ -470,10 +619,8 @@ else:
         if submitted:
             if fertilizer_model and label_encoder_soil and label_encoder_crop:
                 if all([temparature >= 0, humidity >= 0, moisture >= 0, nitrogen >= 0, potassium >= 0, phosphorous >= 0]):
-                    # Encode categorical variables
                     soil_encoded = label_encoder_soil.transform([soil_type])[0]
                     crop_encoded = label_encoder_crop.transform([crop_type])[0]
-                    # Prepare features (match dataset column order: Temparature, Humidity, Moisture, Soil_Type, Crop_Type, Nitrogen, Potassium, Phosphorous)
                     features = np.array([[temparature, humidity, moisture, soil_encoded, crop_encoded, nitrogen, potassium, phosphorous]])
                     with st.spinner("🔍 Analyzing..."):
                         prediction = fertilizer_model.predict(features)
