@@ -443,34 +443,25 @@ else:
             else:
                 st.error("🚫 Could not retrieve weather data.")
 
-   elif selected_menu == "Fertilizer Recommendation":
+   
+    elif selected_menu == "Fertilizer Recommendation":
         st.subheader("🧪 Fertilizer Recommendation")
         st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Crop & Soil Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("fertilizer_form"):
-            temperature = st.number_input("🌡️ Temperature (°C)", min_value=0.0, max_value=50.0, value=25.0, step=0.1)
-            humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
-            moisture = st.number_input("💦 Moisture (%)", min_value=0.0, max_value=100.0, value=30.0, step=0.1)
-            soil_type = st.selectbox("🌍 Soil Type", ["Sandy", "Loamy", "Black", "Red", "Clayey"])
-            crop_type = st.selectbox("🌾 Crop Type", ["Maize", "Sugarcane", "Cotton", "Tobacco", "Paddy", "Barley", "Wheat", "Millets", "Oil seeds", "Pulses", "Ground Nuts"])
-            nitrogen = st.number_input("🌿 Nitrogen (N) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
-            potassium = st.number_input("🌿 Potassium (K) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
-            phosphorous = st.number_input("🌱 Phosphorous (P) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            crop = st.text_input("🌾 Enter Crop Name", help="e.g., Rice")
+            soil_type = st.text_input("🌍 Enter Soil Type", help="e.g., Sandy")
             submitted = st.form_submit_button("Recommend Fertilizer 🌟")
         if submitted:
-            if fertilizer_model and label_encoder_soil and label_encoder_crop:
-                if all([temperature >= 0, humidity >= 0, moisture >= 0, nitrogen >= 0, potassium >= 0, phosphorous >= 0]):
-                    # Encode categorical variables
-                    soil_encoded = label_encoder_soil.transform([soil_type])[0]
-                    crop_encoded = label_encoder_crop.transform([crop_type])[0]
-                    # Prepare features
-                    features = np.array([[temperature, humidity, moisture, soil_encoded, crop_encoded, nitrogen, potassium, phosphorous]])
+            if fertilizer_model:
+                if crop and soil_type:
+                    features = np.array([[hash(crop) % 100, hash(soil_type) % 100]])
                     with st.spinner("🔍 Analyzing..."):
                         prediction = fertilizer_model.predict(features)
                     st.success(f"🌟 Recommended Fertilizer: **{prediction[0]}**")
                 else:
-                    st.error("🚫 Please fill in all fields with valid values.")
+                    st.error("🚫 Please fill in all fields.")
             else:
-                st.error("🚫 Fertilizer recommendation model or label encoders failed to load. Please ensure the model files exist.")
+                st.warning("🛠️ Fertilizer recommendation model not available yet. Placeholder output: **NPK 20-20-20**")
 
     elif selected_menu == "Smart Farming Guidance":
         st.subheader("📚 Smart Farming Guidance")
