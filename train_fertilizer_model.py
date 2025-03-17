@@ -13,14 +13,17 @@ if not os.path.exists('models'):
 # Load the dataset
 data = pd.read_csv('datasets/Fertilizer Prediction.csv')
 
+# Print the actual column names to confirm
+print("Actual column names in the dataset:", data.columns.tolist())
+
 # Encode categorical variables (Soil_Type and Crop_Type)
 label_encoder_soil = LabelEncoder()
 label_encoder_crop = LabelEncoder()
 data['Soil_Type'] = label_encoder_soil.fit_transform(data['Soil_Type'])
 data['Crop_Type'] = label_encoder_crop.fit_transform(data['Crop_Type'])
 
-# Features and target
-X = data[['Temperature', 'Humidity', 'Moisture', 'Soil_Type', 'Crop_Type', 'Nitrogen', 'Potassium', 'Phosphorous']]
+# Features and target (updated to match dataset column names)
+X = data[['Temparature', 'Humidity', 'Moisture', 'Soil_Type', 'Crop_Type', 'Nitrogen', 'Potassium', 'Phosphorous']]
 y = data['Fertilizer']
 
 # Split the data
