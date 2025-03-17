@@ -16,7 +16,7 @@ load_dotenv()
 # Must be the first Streamlit command
 st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar_state="expanded")
 
-# Load ML models with caching and error handling
+# Load ML models and label encoders with caching and error handling
 @st.cache_resource
 def load_model(model_path):
     try:
@@ -25,9 +25,16 @@ def load_model(model_path):
         st.error(f"🚨 Model file not found: {model_path}")
         return None
 
-crop_model = load_model('models/crop_recommendation.pkl')
-yield_model = None  # Placeholder
-fertilizer_model = None  # Placeholder
+# Load the crop recommendation model (fixed file name)
+crop_model = load_model('models/crop_recommendation_model.pkl')
+
+# Load the fertilizer recommendation model and label encoders
+fertilizer_model = load_model('models/fertilizer_recommendation_model.pkl')
+label_encoder_soil = load_model('models/label_encoder_soil.pkl')
+label_encoder_crop = load_model('models/label_encoder_crop.pkl')
+
+# Placeholder for yield model
+yield_model = None
 
 # Placeholder for disease model
 @st.cache_resource
@@ -412,13 +419,13 @@ else:
             submitted = st.form_submit_button("Predict Yield 🚀")
         if submitted:
             if yield_model:
-                if all([rainfall, pesticide, temperature]):
+                if all([rainfall >= 0, pesticide >= 0, temperature >= 0]):  # Fixed validation
                     features = np.array([[rainfall, pesticide, temperature]])
                     with st.spinner("🔍 Predicting yield..."):
                         prediction = yield_model.predict(features)
                     st.success(f"🌟 Predicted Yield: **{prediction[0]:.2f} tons**")
                 else:
-                    st.error("🚫 Please fill in all fields.")
+                    st.error("🚫 Please fill in all fields with valid values.")
             else:
                 st.warning("🛠️ Yield prediction model not available yet. Placeholder output: **5.0 tons**")
 
@@ -443,25 +450,34 @@ else:
             else:
                 st.error("🚫 Could not retrieve weather data.")
 
-   
     elif selected_menu == "Fertilizer Recommendation":
         st.subheader("🧪 Fertilizer Recommendation")
         st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Crop & Soil Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("fertilizer_form"):
-            crop = st.text_input("🌾 Enter Crop Name", help="e.g., Rice")
-            soil_type = st.text_input("🌍 Enter Soil Type", help="e.g., Sandy")
+            temparature = st.number_input("🌡️ Temparature (°C)", min_value=0.0, max_value=50.0, value=25.0, step=0.1)
+            humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
+            moisture = st.number_input("💦 Moisture (%)", min_value=0.0, max_value=100.0, value=30.0, step=0.1)
+            soil_type = st.selectbox("🌍 Soil Type", ["Sandy", "Loamy", "Black", "Red", "Clayey"])
+            crop_type = st.selectbox("🌾 Crop Type", ["Maize", "Sugarcane", "Cotton", "Tobacco", "Paddy", "Barley", "Wheat", "Millets", "Oil seeds", "Pulses", "Ground Nuts"])
+            nitrogen = st.number_input("🌿 Nitrogen (N) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            potassium = st.number_input("🌿 Potassium (K) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            phosphorous = st.number_input("🌱 Phosphorous (P) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
             submitted = st.form_submit_button("Recommend Fertilizer 🌟")
         if submitted:
-            if fertilizer_model:
-                if crop and soil_type:
-                    features = np.array([[hash(crop) % 100, hash(soil_type) % 100]])
+            if fertilizer_model and label_encoder_soil and label_encoder_crop:
+                if all([temparature >= 0, humidity >= 0, moisture >= 0, nitrogen >= 0, potassium >= 0, phosphorous >= 0]):
+                    # Encode categorical variables
+                    soil_encoded = label_encoder_soil.transform([soil_type])[0]
+                    crop_encoded = label_encoder_crop.transform([crop_type])[0]
+                    # Prepare features (match dataset column order: Temparature, Humidity, Moisture, Soil_Type, Crop_Type, Nitrogen, Potassium, Phosphorous)
+                    features = np.array([[temparature, humidity, moisture, soil_encoded, crop_encoded, nitrogen, potassium, phosphorous]])
                     with st.spinner("🔍 Analyzing..."):
                         prediction = fertilizer_model.predict(features)
                     st.success(f"🌟 Recommended Fertilizer: **{prediction[0]}**")
                 else:
-                    st.error("🚫 Please fill in all fields.")
+                    st.error("🚫 Please fill in all fields with valid values.")
             else:
-                st.warning("🛠️ Fertilizer recommendation model not available yet. Placeholder output: **NPK 20-20-20**")
+                st.error("🚫 Fertilizer recommendation model or label encoders failed to load. Please ensure the model files exist.")
 
     elif selected_menu == "Smart Farming Guidance":
         st.subheader("📚 Smart Farming Guidance")
