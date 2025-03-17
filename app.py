@@ -363,24 +363,26 @@ else:
 
     elif selected_menu == "Crop Recommendation":
         st.subheader("🌾 Crop Recommendation System")
-        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Soil Details Below 🎉</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Soil and Climate Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("crop_form"):
-            nitrogen = st.number_input("🌿 Nitrogen Level (N)", min_value=0, value=0, step=1)
-            phosphorus = st.number_input("🌱 Phosphorus Level (P)", min_value=0, value=0, step=1)
-            potassium = st.number_input("🌿 Potassium Level (K)", min_value=0, value=0, step=1)
+            nitrogen = st.number_input("🌿 Nitrogen (N) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            phosphorus = st.number_input("🌱 Phosphorus (P) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            potassium = st.number_input("🌿 Potassium (K) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            temperature = st.number_input("🌡️ Temperature (°C)", min_value=0.0, max_value=50.0, value=25.0, step=0.1)
+            humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
             ph = st.number_input("⚗️ pH Level", min_value=0.0, max_value=14.0, value=7.0, step=0.1)
-            rainfall = st.number_input("💧 Rainfall (mm)", min_value=0.0, value=0.0, step=0.1)
+            rainfall = st.number_input("☔ Rainfall (mm)", min_value=0.0, value=0.0, step=0.1)
             submitted = st.form_submit_button("Predict Crop 🌟")
         if submitted and crop_model:
-            if all([nitrogen, phosphorus, potassium, rainfall]):
-                features = np.array([[nitrogen, phosphorus, potassium, ph, rainfall]])
-                with st.spinner("🔍 Analyzing soil data..."):
+            if all([nitrogen >= 0, phosphorus >= 0, potassium >= 0, temperature >= 0, humidity >= 0, ph >= 0, rainfall >= 0]):
+                features = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
+                with st.spinner("🔍 Analyzing soil and climate data..."):
                     prediction = crop_model.predict(features)
                 st.success(f"🌟 Recommended Crop: **{prediction[0]}**")
             else:
-                st.error("🚫 Please fill in all fields.")
+                st.error("🚫 Please fill in all fields with valid values.")
         elif submitted and not crop_model:
-            st.warning("🛠️ Crop recommendation model not available yet.")
+            st.error("🚫 Crop recommendation model failed to load. Please ensure the model file exists.")
 
     elif selected_menu == "Identify Plant Disease":
         st.subheader("🦠 Plant Disease Identification")
