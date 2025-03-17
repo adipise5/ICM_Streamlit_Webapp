@@ -6,7 +6,6 @@ import joblib
 import os
 import io
 from tensorflow.keras.preprocessing import image as keras_image
-import plotly.express as px
 import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime
@@ -101,13 +100,13 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with nature-inspired textured background, smaller centered forms, and smaller input boxes
+# Custom CSS with updated sidebar navigation
 st.markdown(
     """
     <style>
         /* Nature-inspired textured background */
         [data-testid="stAppViewContainer"] {
-            background-color: #FFFFFF; /* Soft earthy beige */
+            background-color: #e6e8d5; /* Soft earthy beige */
             background-image: radial-gradient(circle, rgba(76, 175, 80, 0.1) 1px, transparent 1px);
             background-size: 20px 20px; /* Subtle texture */
         }
@@ -185,11 +184,11 @@ st.markdown(
         /* Smaller and centered forms */
         .stForm {
             background: rgba(255, 255, 255, 0.98); /* Light mode */
-            padding: 20px; /* Reduced padding */
+            padding: 15px; /* Reduced padding */
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            width: 500px; /* Smaller fixed width */
+            width: 300px; /* Smaller fixed width */
             margin: 0 auto; /* Center the form */
         }
         @media (prefers-color-scheme: dark) {
@@ -197,37 +196,60 @@ st.markdown(
                 background: rgba(40, 44, 52, 0.98); /* Dark mode */
             }
         }
-        /* Sidebar */
+        /* Modern Sidebar Navigation */
         [data-testid="stSidebar"] > div:first-child {
             background: linear-gradient(180deg, #4CAF50, #388E3C, #2E7D32);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        [data-testid="stSidebar"] .stButton>button {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            margin: 10px 0;
-            border-radius: 25px;
-            padding: 10px 12px;
-            font-size: 14px;
-            font-weight: bold;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-        [data-testid="stSidebar"] .stButton>button:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: translateX(10px);
-        }
         [data-testid="stSidebar"] h1 {
             color: white;
             text-align: center;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+        /* Style the selectbox to look modern */
+        [data-testid="stSidebar"] .stSelectbox > div > div {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        [data-testid="stSidebar"] .stSelectbox > div > div:hover {
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
         }
         .stImage {
             border-radius: 10px;
             margin: 10px auto;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
         }
     </style>
     """,
@@ -240,7 +262,7 @@ if 'expenses' not in st.session_state:
 if 'profit' not in st.session_state:
     st.session_state.profit = []
 
-# User registration session
+# User registration session (email removed)
 if 'user_info' not in st.session_state:
     st.title("🌱 Bhoomi - Farmer Registration 📝")
     st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Farmer Details Below 🎉</p>", unsafe_allow_html=True)
@@ -261,7 +283,7 @@ else:
     st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']} 👋")
     st.markdown("<p style='text-align: center; color: #4CAF50;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
 
-    # Sidebar Navigation
+    # Modern Sidebar Navigation with Dropdown
     st.sidebar.title("🌍 Navigation")
     if 'menu' not in st.session_state:
         st.session_state['menu'] = "Home"
@@ -275,14 +297,16 @@ else:
         "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
         "Smart Farming Guidance": "📚 Smart Farming Guidance"
     }
+    
+    selected_menu = st.sidebar.selectbox(
+        "Select a Page",
+        list(menu_options.keys()),
+        format_func=lambda x: menu_options[x],
+        index=list(menu_options.keys()).index(st.session_state['menu'])
+    )
+    st.session_state['menu'] = selected_menu
 
-    for key, label in menu_options.items():
-        if st.sidebar.button(label, key=key, help=f"Go to {key}"):
-            st.session_state['menu'] = key
-
-    selected_menu = st.session_state['menu']
-
-    # Home page with only expense and profit charts
+    # Home page with tables instead of charts
     if selected_menu == "Home":
         st.subheader("📊 Financial Overview")
         st.markdown("<p style='text-align: center; color: #4CAF50;'>Track Your Finances 🎉</p>", unsafe_allow_html=True)
@@ -314,34 +338,26 @@ else:
                     else:
                         st.error("🚫 Please enter a valid profit amount.")
 
-        # Convert to DataFrames for charting
-        df_expenses = pd.DataFrame(st.session_state.expenses)
-        df_profit = pd.DataFrame(st.session_state.profit)
-
-        # Ensure date column is in datetime format
-        if not df_expenses.empty:
-            df_expenses['date'] = pd.to_datetime(df_expenses['date'])
-            df_expenses = df_expenses.groupby("date", as_index=False).agg({"amount": "sum"}).sort_values("date")
-        if not df_profit.empty:
-            df_profit['date'] = pd.to_datetime(df_profit['date'])
-            df_profit = df_profit.groupby("date", as_index=False).agg({"amount": "sum"}).sort_values("date")
-
-        # Display charts
+        # Display tables with totals
         col1, col2 = st.columns(2)
+        
         with col1:
-            st.subheader("💸 Expenses Over Time")
-            if not df_expenses.empty:
-                fig_expenses = px.line(df_expenses, x="date", y="amount", title="Expenses", color_discrete_sequence=["#FF5722"])
-                fig_expenses.update_traces(mode='lines+markers')
-                st.plotly_chart(fig_expenses, use_container_width=True)
+            st.subheader("💸 Expenses")
+            if st.session_state.expenses:
+                df_expenses = pd.DataFrame(st.session_state.expenses)
+                total_expense = df_expenses['amount'].sum()
+                st.table(df_expenses)
+                st.markdown(f"**Total Expense:** ₹{total_expense:.2f}")
             else:
                 st.write("📊 No expense data to display.")
+        
         with col2:
-            st.subheader("💰 Profit Over Time")
-            if not df_profit.empty:
-                fig_profit = px.line(df_profit, x="date", y="amount", title="Profit", color_discrete_sequence=["#4CAF50"])
-                fig_profit.update_traces(mode='lines+markers')
-                st.plotly_chart(fig_profit, use_container_width=True)
+            st.subheader("💰 Profits")
+            if st.session_state.profit:
+                df_profit = pd.DataFrame(st.session_state.profit)
+                total_profit = df_profit['amount'].sum()
+                st.table(df_profit)
+                st.markdown(f"**Total Profit:** ₹{total_profit:.2f}")
             else:
                 st.write("📊 No profit data to display.")
 
@@ -381,10 +397,13 @@ else:
         st.subheader("📊 Crop Yield Prediction")
         st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Crop Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("yield_form"):
-            countries = ["India", "Brazil", "USA", "Australia", "Albania"]
-            country = st.selectbox("🌍 Select Country:", countries)
-            crops = ["Maize", "Wheat", "Rice", "Soybean", "Barley"]
-            crop = st.selectbox("🌾 Select Crop:", crops)
+            col1, col2 = st.columns(2)
+            with col1:
+                countries = ["India", "Brazil", "USA", "Australia", "Albania"]
+                country = st.selectbox("🌍 Select Country:", countries)
+            with col2:
+                crops = ["Maize", "Wheat", "Rice", "Soybean", "Barley"]
+                crop = st.selectbox("🌾 Select Crop:", crops)
             rainfall = st.number_input("💧 Average Rainfall (mm/year)", min_value=0.0, value=0.0, step=0.1)
             pesticide = st.number_input("🛡️ Pesticide Use (tonnes)", min_value=0.0, value=0.0, step=0.1)
             temperature = st.number_input("🌡️ Average Temperature (°C)", min_value=-50.0, max_value=50.0, value=0.0, step=0.1)
