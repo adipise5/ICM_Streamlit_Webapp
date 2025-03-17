@@ -421,7 +421,6 @@ else:
 
     # Modern Animated Navigation Bar
     with st.sidebar:
-        st.markdown('<div class="navbar">', unsafe_allow_html=True)
         st.markdown('<h1 style="margin: 0;">🌍 Navigation</h1>', unsafe_allow_html=True)
         
         # Theme Toggle Button
