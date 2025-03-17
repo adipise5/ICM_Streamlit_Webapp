@@ -80,12 +80,9 @@ CROP_INFO = {
 
 @st.cache_data
 def get_smart_farming_info(crop, country):
-    # Normalize crop name to lowercase for lookup
     crop = crop.lower()
-    
     if crop not in CROP_INFO:
         return f"🚫 Sorry, detailed guidance for {crop} is not available in the database. General advice: Use balanced NPK fertilizers (20-20-20), ensure proper irrigation, and plant during the optimal season for your region."
-    
     crop_data = CROP_INFO[crop]
     guidance = (
         f"### Smart Farming Guidance for {crop.capitalize()} in {country}\n\n"
@@ -105,25 +102,36 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with aesthetic background and centered submit buttons
+# Custom CSS with new background image and support for dark/light modes
 st.markdown(
     """
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background: url('https://media.istockphoto.com/id/1463452333/photo/smart-farming-holding-young-plant-smart-farming-and-precision-agriculture-4-0-agriculture.jpg?s=2048x2048&w=is&k=20&c=4p5YZnsEsVrw4qWHHg6DSYQ8kPissgWnCtYpmyeq8q0=') no-repeat center center fixed;
             background-size: cover;
             color: #2b3e50;
             min-height: 100vh;
         }
+        /* Main content container */
         .main {
             padding: 20px;
             max-width: 600px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.85); /* Light mode */
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             animation: fadeIn 1s ease-in;
+        }
+        /* Dark mode adjustments */
+        @media (prefers-color-scheme: dark) {
+            .main {
+                background: rgba(40, 44, 52, 0.85); /* Dark mode */
+                color: #f5f5f5;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                color: #f5f5f5;
+            }
         }
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -131,12 +139,12 @@ st.markdown(
         }
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
-            color: #2b3e50;
+            color: #2b3e50; /* Light mode */
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         .stSelectbox, .stTextInput>div>input, .stNumberInput>div>input {
-            background-color: #ffffff;
+            background-color: #ffffff; /* Light mode */
             border: 2px solid #4CAF50;
             border-radius: 10px;
             padding: 5px;
@@ -145,12 +153,14 @@ st.markdown(
             width: 100%;
             transition: border-color 0.3s ease;
         }
+        @media (prefers-color-scheme: dark) {
+            .stSelectbox, .stTextInput>div>input, .stNumberInput>div>input {
+                background-color: #333;
+                color: #f5f5f5;
+            }
+        }
         .stSelectbox:hover, .stTextInput:hover>div>input, .stNumberInput:hover>div>input {
             border-color: #FF5722;
-        }
-        .stSelectbox>div>div, .stNumberInput>div>div {
-            background-color: #ffffff;
-            border-radius: 10px;
         }
         .stButton>button {
             background: linear-gradient(90deg, #4CAF50, #FFEB3B);
@@ -169,7 +179,7 @@ st.markdown(
             background: linear-gradient(90deg, #FF5722, #FFCA28);
             transform: scale(1.05);
         }
-        /* Enhanced Navigation Bar */
+        /* Sidebar */
         .sidebar .sidebar-content {
             background: linear-gradient(180deg, #4CAF50 0%, #2196F3 50%, #FF5722 100%);
             color: white;
@@ -190,9 +200,6 @@ st.markdown(
             padding: 12px 15px;
             font-size: 16px;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
             transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
             border: 2px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -202,10 +209,6 @@ st.markdown(
             background: rgba(255, 255, 255, 0.4);
             transform: translateX(10px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .sidebar .sidebar-content .stButton>button::before {
-            content: '';
-            margin-right: 10px;
         }
         .sidebar .sidebar-content h1 {
             text-align: center;
@@ -220,30 +223,17 @@ st.markdown(
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        .card {
-            background: linear-gradient(135deg, #ffffff, #e0f7fa);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px auto;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 250px;
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .card h3 {
-            color: #FF5722;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
         .stForm {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.95); /* Light mode */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             animation: bounceIn 1s ease-out;
+        }
+        @media (prefers-color-scheme: dark) {
+            .stForm {
+                background: rgba(40, 44, 52, 0.95); /* Dark mode */
+            }
         }
         @keyframes bounceIn {
             0% { transform: scale(0.9); }
@@ -313,21 +303,14 @@ else:
 
     selected_menu = st.session_state['menu']
 
-    # Dummy data for charts
-    df_yield = pd.DataFrame({
-        "Date": ["2025-03-01", "2025-03-02", "2025-03-03", "2025-03-04", "2025-03-05"],
-        "Yield": [2, 3, 1, 4, 2]
-    })
-
-    # Home page with statistics, expense, and profit input
+    # Home page with expenses and profit input
     if selected_menu == "Home":
-        st.subheader("📊 Statistics")
+        st.subheader("📊 Financial Overview")
         st.markdown("<p style='text-align: center; color: #FF5722;'>Track Your Finances 🎉</p>", unsafe_allow_html=True)
 
         # Expense or Profit Input Form
         with st.form("finance_form"):
             finance_type = st.selectbox("📋 Select Type:", ["Expense", "Profit"])
-            
             if finance_type == "Expense":
                 expense_date = st.date_input("📅 Expense Date", value=datetime.today())
                 expense_amount = st.number_input("💸 Expense Amount", min_value=0.0, value=0.0, step=0.1)
@@ -337,7 +320,7 @@ else:
                     if expense_amount >= 0 and expense_purpose:
                         st.session_state.expenses.append({"date": expense_date.strftime('%Y-%m-%d'), "amount": expense_amount, "purpose": expense_purpose})
                         st.success("✅ Expense added successfully!")
-                        st.rerun()  # Force rerender to update charts
+                        st.rerun()
                     else:
                         st.error("🚫 Please fill in all fields with valid amounts.")
             else:
@@ -348,7 +331,7 @@ else:
                     if profit_amount >= 0:
                         st.session_state.profit.append({"date": profit_date.strftime('%Y-%m-%d'), "amount": profit_amount})
                         st.success("✅ Profit added successfully!")
-                        st.rerun()  # Force rerender to update charts
+                        st.rerun()
                     else:
                         st.error("🚫 Please enter a valid profit amount.")
 
@@ -370,7 +353,7 @@ else:
             st.subheader("💸 Expenses Over Time")
             if not df_expenses.empty:
                 fig_expenses = px.line(df_expenses, x="date", y="amount", title="Expenses", color_discrete_sequence=["#FF5722"])
-                fig_expenses.update_traces(mode='lines+markers')  # Add markers for clarity
+                fig_expenses.update_traces(mode='lines+markers')
                 st.plotly_chart(fig_expenses, use_container_width=True)
             else:
                 st.write("📊 No expense data to display.")
@@ -379,39 +362,10 @@ else:
             st.subheader("💰 Profit Over Time")
             if not df_profit.empty:
                 fig_profit = px.line(df_profit, x="date", y="amount", title="Profit", color_discrete_sequence=["#4CAF50"])
-                fig_profit.update_traces(mode='lines+markers')  # Add markers for clarity
+                fig_profit.update_traces(mode='lines+markers')
                 st.plotly_chart(fig_profit, use_container_width=True)
             else:
                 st.write("📊 No profit data to display.")
-
-        # Combined Chart
-        st.subheader("📈 Expenses vs Profit")
-        if not df_expenses.empty or not df_profit.empty:
-            # Merge data on date, filling missing dates with 0
-            df_combined = pd.merge(df_expenses, df_profit, on="date", how="outer", suffixes=('_exp', '_prof')).fillna(0)
-            fig_combined = go.Figure()
-            fig_combined.add_trace(go.Scatter(x=df_combined["date"], y=df_combined["amount_exp"], mode='lines+markers', name='Expenses', line=dict(color='#FF5722')))
-            fig_combined.add_trace(go.Scatter(x=df_combined["date"], y=df_combined["amount_prof"], mode='lines+markers', name='Profit', line=dict(color='#4CAF50')))
-            fig_combined.update_layout(title="Expenses vs Profit", xaxis_title="Date", yaxis_title="Amount")
-            st.plotly_chart(fig_combined, use_container_width=True)
-        else:
-            st.write("📊 No data to display for combined chart.")
-
-        # Statistics Cards
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown('<div class="card"><h3>📈 Yield Over Time</h3></div>', unsafe_allow_html=True)
-            fig = px.line(df_yield, x="Date", y="Yield", title="", color_discrete_sequence=["#FF5722"])
-            st.plotly_chart(fig, use_container_width=True)
-        with col2:
-            st.markdown('<div class="card"><h3>💰 Total Income</h3><p>0</p></div>', unsafe_allow_html=True)
-        with col3:
-            st.markdown('<div class="card"><h3>🛒 Total Expenses</h3><p>0</p></div>', unsafe_allow_html=True)
-        col4, col5 = st.columns(2)
-        with col4:
-            st.markdown('<div class="card"><h3>🌾 Total Yield</h3><p>0</p></div>', unsafe_allow_html=True)
-        with col5:
-            st.markdown('<div class="card"><h3>📈 Total Profit</h3><p>0</p></div>', unsafe_allow_html=True)
 
     elif selected_menu == "Crop Recommendation":
         st.subheader("🌾 Crop Recommendation System")
