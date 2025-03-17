@@ -435,8 +435,8 @@ else:
                 "Home": "🏠 Home",
                 "Crop Recommendation": "🌾 Crop Recommendation",
                 "Identify Plant Disease": "🦠 Identify Plant Disease",
-                "Crop Yield Prediction": "📊 Crop Yield Prediction"
-                "Today's Weather": "🌤️ Today's Weather"
+                "Crop Yield Prediction": "📊 Crop Yield Prediction",
+                "Today's Weather": "🌤️ Today's Weather",
                 "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
                 "Smart Farming Guidance": "📚 Smart Farming Guidance"
         }
