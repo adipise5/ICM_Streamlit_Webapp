@@ -1,4 +1,402 @@
-# ... (previous imports and functions remain unchanged)
+import streamlit as st
+import requests
+from PIL import Image
+import numpy as np
+import joblib
+import os
+import io
+from tensorflow.keras.preprocessing import image as keras_image
+import pandas as pd
+from dotenv import load_dotenv
+from datetime import datetime
+
+# Load environment variables (if needed)
+load_dotenv()
+
+# Must be the first Streamlit command
+st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar_state="expanded")
+
+# Load ML models and label encoders with caching and error handling
+@st.cache_resource
+def load_model(model_path):
+    try:
+        return joblib.load(model_path)
+    except FileNotFoundError:
+        st.error(f"🚨 Model file not found: {model_path}")
+        return None
+
+# Load the crop recommendation model (fixed file name)
+crop_model = load_model('models/crop_recommendation.pkl')
+
+# Load the fertilizer recommendation model and label encoders
+fertilizer_model = load_model('models/fertilizer_recommendation_model.pkl')
+label_encoder_soil = load_model('models/label_encoder_soil.pkl')
+label_encoder_crop = load_model('models/label_encoder_crop.pkl')
+
+# Placeholder for yield model
+yield_model = None
+
+# Placeholder for disease model
+@st.cache_resource
+def load_disease_model():
+    return None
+
+disease_model = load_disease_model()
+
+# Weather API function
+def get_weather(zip_code, country_code="IN"):
+    api_key = "f938f65079af3e9bd2414c6556df724b"
+    url = f"http://api.openweathermap.org/geo/1.0/zip?zip={zip_code},{country_code}&appid={api_key}"
+    try:
+        response = requests.get(url).json()
+        if 'lat' not in response or 'lon' not in response:
+            return {"error": "🚫 Invalid ZIP code or country code"}
+        lat, lon = response['lat'], response['lon']
+        weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+        weather_response = requests.get(weather_url).json()
+        return weather_response
+    except requests.RequestException:
+        return {"error": "🌐 Failed to connect to weather service"}
+
+# Static crop information database (sourced from FAO)
+CROP_INFO = {
+    "wheat": {
+        "climate": "Temperate regions, prefers cool and moist weather during vegetative growth, dry and warm weather during grain filling.",
+        "soil": "Well-drained loamy soils, pH 6.0–7.5.",
+        "fertilizers": "Nitrogen (120–150 kg/ha), Phosphorus (60–80 kg/ha), Potassium (40–60 kg/ha). Apply NPK 20-20-20 at planting, followed by split nitrogen applications.",
+        "time_periods": "Sown in autumn (October–November) for winter wheat, spring (March–April) for spring wheat; harvested after 4–5 months.",
+        "best_practices": "Rotate with legumes, ensure proper irrigation (500–800 mm rainfall), control weeds early, and use disease-resistant varieties."
+    },
+    "rice": {
+        "climate": "Tropical and subtropical regions, warm and humid, temperatures 20–38°C.",
+        "soil": "Clayey or loamy soils with good water retention, pH 5.5–7.0.",
+        "fertilizers": "Nitrogen (100–150 kg/ha), Phosphorus (30–50 kg/ha), Potassium (30–50 kg/ha). Apply NPK 15-15-15 at planting, split nitrogen applications during tillering and panicle initiation.",
+        "time_periods": "Sown during the monsoon (June–July), harvested after 4–6 months (November–December).",
+        "best_practices": "Flooded fields for most varieties (irrigated rice), transplant seedlings at 20–30 days, manage pests like rice blast, and ensure 1000–1500 mm water availability."
+    },
+    "maize": {
+        "climate": "Warm weather, 21–30°C, requires frost-free conditions.",
+        "soil": "Well-drained sandy loam to loamy soils, pH 5.8–7.0.",
+        "fertilizers": "Nitrogen (120–180 kg/ha), Phosphorus (60–80 kg/ha), Potassium (40–60 kg/ha). Apply NPK 20-20-20 at planting, top-dress with nitrogen at knee-high stage.",
+        "time_periods": "Sown in spring (April–May), harvested after 3–4 months (August–September).",
+        "best_practices": "Plant in rows with 60–75 cm spacing, irrigate at 600–800 mm, control pests like maize borers, and rotate with legumes to improve soil fertility."
+    }
+}
+
+@st.cache_data
+def get_smart_farming_info(crop, country):
+    crop = crop.lower()
+    if crop not in CROP_INFO:
+        return f"🚫 Sorry, detailed guidance for {crop} is not available in the database. General advice: Use balanced NPK fertilizers (20-20-20), ensure proper irrigation, and plant during the optimal season for your region."
+    crop_data = CROP_INFO[crop]
+    guidance = (
+        f"### Smart Farming Guidance for {crop.capitalize()} in {country}\n\n"
+        f"**Climate Requirements**: {crop_data['climate']}\n\n"
+        f"**Soil Requirements**: {crop_data['soil']}\n\n"
+        f"**Fertilizers**: {crop_data['fertilizers']}\n\n"
+        f"**Time Periods**: {crop_data['time_periods']}\n\n"
+        f"**Best Practices**: {crop_data['best_practices']}\n\n"
+        f"**Note**: Adjust practices based on local conditions in {country}, such as rainfall patterns and temperature variations."
+    )
+    return guidance
+
+def predict_disease(image):
+    if disease_model is None:
+        return "🛠️ Disease detection model not loaded (placeholder)"
+    img = keras_image.img_to_array(image.resize((224, 224))) / 255.0
+    img = np.expand_dims(img, axis=0)
+    return "🌿 Disease Name (placeholder)"
+
+# Custom CSS and JavaScript for animated navbar
+st.markdown(
+    """
+    <style>
+        /* Sticky Navigation */
+        [data-testid="stSidebar"] {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Navbar Container */
+        .navbar {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            padding: 15px 20px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Navigation Items */
+        .nav-item {
+            display: inline-block;
+            margin: 0 15px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            color: #FFD700; /* Gold hover effect */
+            transform: scale(1.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        /* Dropdown Support */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #2E7D32;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            z-index: 1;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #388E3C;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Dark/Light Mode Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            color: #FFD700;
+        }
+
+        /* Mobile-Friendly Adjustments */
+        @media (max-width: 768px) {
+            .nav-item {
+                display: block;
+                margin: 10px 0;
+                text-align: center;
+            }
+            .dropdown-content {
+                position: relative;
+                width: 100%;
+                box-shadow: none;
+            }
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(5px); }
+            to { transform: translateY(0); }
+        }
+
+        /* Dark Mode */
+        [data-testid="stAppViewContainer"].dark-mode {
+            background-color: #2e2e2e;
+            background-image: radial-gradient(circle, rgba(76, 175, 80, 0.2) 1px, transparent 1px);
+        }
+
+        [data-testid="stAppViewContainer"] > .main.dark-mode {
+            background: rgba(40, 44, 52, 0.95);
+            color: #d4e6d5;
+        }
+
+        .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6 {
+            color: #d4e6d5;
+        }
+
+        .dark-mode .stTextInput > div > input, .dark-mode .stNumberInput > div > input, .dark-mode .stSelectbox > div > div {
+            background-color: #555;
+            color: #d4e6d5;
+            border: 1px solid #4CAF50;
+        }
+
+        .dark-mode .navbar {
+            background: linear-gradient(135deg, #2E7D32, #1B5E20);
+        }
+
+        /* Main Content Styling */
+        [data-testid="stAppViewContainer"] > .main {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: #3a4f41;
+            transition: all 0.3s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+            color: #3a4f41;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .stTextInput > div > input, .stNumberInput > div > input {
+            width: 150px;
+            padding: 4px;
+            font-size: 12px;
+            border-radius: 8px;
+            border: 1px solid #4CAF50;
+            background-color: #fff;
+            color: #3a4f41;
+        }
+
+        .stSelectbox > div > div {
+            width: 150px;
+            padding: 4px;
+            font-size: 12px;
+            border-radius: 8px;
+            border: 1px solid #4CAF50;
+            background-color: #fff;
+            color: #3a4f41;
+        }
+
+        .stButton>button {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            color: white;
+            border-radius: 10px;
+            padding: 8px;
+            border: none;
+            width: 150px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.3s ease, background 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .stButton>button:hover {
+            background: linear-gradient(90deg, #388E3C, #689F38);
+            transform: scale(1.05);
+        }
+
+        .stForm {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .dark-mode .stForm {
+            background: rgba(40, 44, 52, 0.98);
+        }
+
+        .stImage {
+            border-radius: 10px;
+            margin: 10px auto;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dark-mode table {
+            background-color: #444;
+        }
+
+        .dark-mode th {
+            background-color: #2E7D32;
+        }
+
+        .dark-mode tr:nth-child(even) {
+            background-color: #333;
+        }
+
+        .dark-mode tr:hover {
+            background-color: #555;
+        }
+    </style>
+
+    <script>
+        // Dark/Light Mode Toggle Functionality
+        function toggleTheme() {
+            const app = document.querySelector('[data-testid="stAppViewContainer"]');
+            app.classList.toggle('dark-mode');
+            const isDarkMode = app.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Load theme from localStorage on page load
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme');
+            const app = document.querySelector('[data-testid="stAppViewContainer"]');
+            if (savedTheme === 'dark') {
+                app.classList.add('dark-mode');
+            }
+        };
+    </script>
+    """,
+    unsafe_allow_html=True
+)
+
+# Initialize session state for expenses, profit, and theme
+if 'expenses' not in st.session_state:
+    st.session_state.expenses = []
+if 'profit' not in st.session_state:
+    st.session_state.profit = []
+if 'theme' not in st.session_state:
+    st.session_state.theme = 'light'  # Default theme
 
 # User registration session
 if 'user_info' not in st.session_state:
