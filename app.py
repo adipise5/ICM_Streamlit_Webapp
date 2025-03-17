@@ -26,7 +26,7 @@ def load_model(model_path):
         return None
 
 # Load the crop recommendation model (fixed file name)
-crop_model = load_model('models/crop_recommendation_model.pkl')
+crop_model = load_model('models/crop_recommendation.pkl')
 
 # Load the fertilizer recommendation model and label encoders
 fertilizer_model = load_model('models/fertilizer_recommendation_model.pkl')
