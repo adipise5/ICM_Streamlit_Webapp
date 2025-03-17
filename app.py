@@ -107,7 +107,7 @@ st.markdown(
     <style>
         /* Nature-inspired textured background */
         [data-testid="stAppViewContainer"] {
-            background-color: #e6e8d5; /* Soft earthy beige */
+            background-color: #FFFFFF; /* Soft earthy beige */
             background-image: radial-gradient(circle, rgba(76, 175, 80, 0.1) 1px, transparent 1px);
             background-size: 20px 20px; /* Subtle texture */
         }
