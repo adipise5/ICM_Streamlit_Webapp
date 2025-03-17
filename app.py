@@ -184,11 +184,11 @@ st.markdown(
         /* Smaller and centered forms */
         .stForm {
             background: rgba(255, 255, 255, 0.98); /* Light mode */
-            padding: 15px; /* Reduced padding */
+            padding: 20px; /* Reduced padding */
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            width: 300px; /* Smaller fixed width */
+            width: 500px; /* Smaller fixed width */
             margin: 0 auto; /* Center the form */
         }
         @media (prefers-color-scheme: dark) {
