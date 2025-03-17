@@ -101,7 +101,7 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with nature-inspired textured background
+# Custom CSS with nature-inspired textured background and smaller input boxes
 st.markdown(
     """
     <style>
@@ -145,14 +145,33 @@ st.markdown(
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
+        /* Smaller input boxes */
+        .stTextInput > div > input, .stNumberInput > div > input {
+            width: 150px; /* Reduced width */
+            padding: 4px; /* Reduced padding */
+            font-size: 12px; /* Smaller font size */
+            border-radius: 8px;
+            border: 1px solid #4CAF50;
+            background-color: #fff; /* Light mode */
+            color: #3a4f41;
+        }
+        .stSelectbox > div > div {
+            width: 150px; /* Reduced width */
+            padding: 4px; /* Reduced padding */
+            font-size: 12px; /* Smaller font size */
+            border-radius: 8px;
+            border: 1px solid #4CAF50;
+            background-color: #fff; /* Light mode */
+            color: #3a4f41;
+        }
         .stButton>button {
             background: linear-gradient(90deg, #4CAF50, #8BC34A);
             color: white;
             border-radius: 10px;
-            padding: 10px;
+            padding: 8px; /* Slightly smaller padding */
             border: none;
-            width: 200px;
-            font-size: 16px;
+            width: 150px; /* Match input box width */
+            font-size: 14px; /* Slightly smaller font */
             font-weight: bold;
             transition: transform 0.3s ease, background 0.3s ease;
             display: block;
@@ -175,8 +194,8 @@ st.markdown(
             color: white;
             margin: 10px 0;
             border-radius: 25px;
-            padding: 12px 15px;
-            font-size: 16px;
+            padding: 10px 12px;
+            font-size: 14px;
             font-weight: bold;
             width: 100%;
             transition: all 0.3s ease;
