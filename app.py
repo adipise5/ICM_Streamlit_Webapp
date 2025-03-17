@@ -101,53 +101,52 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS with unique gradient background and animations
+# Custom CSS with nature-inspired textured background
 st.markdown(
     """
     <style>
-        /* Unique animated gradient background */
+        /* Nature-inspired textured background */
         [data-testid="stAppViewContainer"] {
-            background: linear-gradient(45deg, #4CAF50, #2196F3, #FF5722, #FFEB3B);
-            background-size: 400% 400%;
-            animation: gradientAnimation 15s ease infinite;
-        }
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 0%; }
-            50% { background-position: 100% 100%; }
-            100% { background-position: 0% 0%; }
+            background-color: #e6e8d5; /* Soft earthy beige */
+            background-image: radial-gradient(circle, rgba(76, 175, 80, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px; /* Subtle texture */
         }
         /* Main content area */
         [data-testid="stAppViewContainer"] > .main {
-            background: rgba(255, 255, 255, 0.9); /* Light mode */
+            background: rgba(255, 255, 255, 0.95); /* Light mode */
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            color: #2b3e50;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: #3a4f41; /* Earthy green text */
             transition: all 0.3s ease;
         }
         /* Dark mode adjustments */
         @media (prefers-color-scheme: dark) {
+            [data-testid="stAppViewContainer"] {
+                background-color: #2e2e2e; /* Dark earthy gray */
+                background-image: radial-gradient(circle, rgba(76, 175, 80, 0.2) 1px, transparent 1px);
+            }
             [data-testid="stAppViewContainer"] > .main {
-                background: rgba(40, 44, 52, 0.9); /* Dark mode */
-                color: #f5f5f5;
+                background: rgba(40, 44, 52, 0.95); /* Dark mode */
+                color: #d4e6d5; /* Light earthy green text */
             }
             h1, h2, h3, h4, h5, h6 {
-                color: #f5f5f5;
+                color: #d4e6d5;
             }
             .stTextInput > div > input, .stNumberInput > div > input, .stSelectbox > div > div {
                 background-color: #555;
-                color: #f5f5f5;
-                border: 1px solid #FF5722;
+                color: #d4e6d5;
+                border: 1px solid #4CAF50;
             }
         }
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
-            color: #2b3e50; /* Light mode */
+            color: #3a4f41; /* Light mode earthy green */
             font-weight: bold;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         .stButton>button {
-            background: linear-gradient(90deg, #4CAF50, #FFEB3B);
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
             color: white;
             border-radius: 10px;
             padding: 10px;
@@ -161,12 +160,12 @@ st.markdown(
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .stButton>button:hover {
-            background: linear-gradient(90deg, #FF5722, #FFCA28);
+            background: linear-gradient(90deg, #388E3C, #689F38);
             transform: scale(1.05);
         }
         /* Sidebar */
         [data-testid="stSidebar"] > div:first-child {
-            background: linear-gradient(180deg, #4CAF50, #2196F3, #FF5722);
+            background: linear-gradient(180deg, #4CAF50, #388E3C, #2E7D32);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -192,7 +191,7 @@ st.markdown(
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         .stForm {
-            background: rgba(255, 255, 255, 0.95); /* Light mode */
+            background: rgba(255, 255, 255, 0.98); /* Light mode */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -200,7 +199,7 @@ st.markdown(
         }
         @media (prefers-color-scheme: dark) {
             .stForm {
-                background: rgba(40, 44, 52, 0.95); /* Dark mode */
+                background: rgba(40, 44, 52, 0.98); /* Dark mode */
             }
         }
         .stImage {
@@ -222,7 +221,7 @@ if 'profit' not in st.session_state:
 # User registration session
 if 'user_info' not in st.session_state:
     st.title("🌱 Bhoomi - Farmer Registration 📝")
-    st.markdown("<p style='text-align: center; color: #FF5722;'>Enter Farmer Details Below 🎉</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Farmer Details Below 🎉</p>", unsafe_allow_html=True)
     with st.form("user_form", clear_on_submit=True):
         name = st.text_input("👤 Full Name")
         mobile = st.text_input("📞 Mobile Number", help="e.g., 9876543210")
@@ -238,7 +237,7 @@ if 'user_info' not in st.session_state:
             st.error("🚫 Please fill in all fields.")
 else:
     st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']} 👋")
-    st.markdown("<p style='text-align: center; color: #FF5722;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #4CAF50;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
 
     # Sidebar Navigation
     st.sidebar.title("🌍 Navigation")
@@ -264,7 +263,7 @@ else:
     # Home page with only expense and profit charts
     if selected_menu == "Home":
         st.subheader("📊 Financial Overview")
-        st.markdown("<p style='text-align: center; color: #FF5722;'>Track Your Finances 🎉</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Track Your Finances 🎉</p>", unsafe_allow_html=True)
 
         # Expense or Profit Input Form
         with st.form("finance_form"):
@@ -326,7 +325,7 @@ else:
 
     elif selected_menu == "Crop Recommendation":
         st.subheader("🌾 Crop Recommendation System")
-        st.markdown("<p style='text-align: center; color: #FF5722;'>Enter Soil Details Below 🎉</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Soil Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("crop_form"):
             nitrogen = st.number_input("🌿 Nitrogen Level (N)", min_value=0, value=0, step=1)
             phosphorus = st.number_input("🌱 Phosphorus Level (P)", min_value=0, value=0, step=1)
@@ -347,7 +346,7 @@ else:
 
     elif selected_menu == "Identify Plant Disease":
         st.subheader("🦠 Plant Disease Identification")
-        st.markdown("<p style='text-align: center; color: #FF5722;'>Upload Plant Image Below 📸</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Upload Plant Image Below 📸</p>", unsafe_allow_html=True)
         uploaded_file = st.file_uploader("📷 Upload Plant Image", type=["jpg", "png", "jpeg"])
         if uploaded_file:
             image = Image.open(uploaded_file)
@@ -358,7 +357,7 @@ else:
 
     elif selected_menu == "Crop Yield Prediction":
         st.subheader("📊 Crop Yield Prediction")
-        st.markdown("<p style='text-align: center; color: #FF5722;'>Enter Crop Details Below 🎉</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Crop Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("yield_form"):
             countries = ["India", "Brazil", "USA", "Australia", "Albania"]
             country = st.selectbox("🌍 Select Country:", countries)
@@ -382,7 +381,7 @@ else:
 
     elif selected_menu == "Today's Weather":
         st.subheader("🌤️ Weather Forecast")
-        st.markdown("<p style='text-align: center; color: #FF5722;'>Enter Location Details Below 📍</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Location Details Below 📍</p>", unsafe_allow_html=True)
         with st.form("weather_form"):
             zip_code = st.text_input("📍 Enter ZIP Code", help="e.g., 110001 for Delhi")
             country_code = st.text_input("🌍 Enter Country Code", value="IN", help="e.g., IN for India")
@@ -403,7 +402,7 @@ else:
 
     elif selected_menu == "Fertilizer Recommendation":
         st.subheader("🧪 Fertilizer Recommendation")
-        st.markdown("<p style='text-align: center; color: #FF5722;'>Enter Crop & Soil Details Below 🎉</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Crop & Soil Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("fertilizer_form"):
             crop = st.text_input("🌾 Enter Crop Name", help="e.g., Rice")
             soil_type = st.text_input("🌍 Enter Soil Type", help="e.g., Sandy")
@@ -422,7 +421,7 @@ else:
 
     elif selected_menu == "Smart Farming Guidance":
         st.subheader("📚 Smart Farming Guidance")
-        st.markdown("<p style='text-align: center; color: #FF5722;'>Enter Farming Details Below 🎉</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Farming Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("guidance_form"):
             crop = st.text_input("🌾 Enter Crop Name", help="e.g., Wheat")
             country = st.text_input("🌍 Enter Country Name", help="e.g., India")
