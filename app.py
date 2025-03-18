@@ -543,7 +543,7 @@ else:
     st.markdown("<p style='text-align: center; color: #4CAF50;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
 
     # Sidebar Navigation
-    with st.sidebar:
+with st.sidebar:
     st.markdown("<h2 style='color: #2E7D32;'>Navigation</h2>", unsafe_allow_html=True)
     nav_items = ["Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
                  "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"]
@@ -551,8 +551,6 @@ else:
         if st.button(item, key=item):
             st.session_state.menu = item
             st.rerun()
-
-    selected_menu = st.session_state.menu
 
     # Page Content
     if selected_menu == "Home":
