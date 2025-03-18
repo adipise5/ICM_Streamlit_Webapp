@@ -59,6 +59,7 @@ def get_weather(zip_code, country_code="IN"):
         return {"error": "🌐 Failed to connect to weather service"}
 
 # Static crop information database
+# Static crop information database (sourced from provided document)
 CROP_INFO = {
     "wheat": {
         "climate": "Temperate regions, prefers cool and moist weather during vegetative growth, dry and warm weather during grain filling.",
