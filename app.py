@@ -107,11 +107,11 @@ def predict_disease(image):
     img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
 
-# Custom CSS and JavaScript for animated navbar
+# Custom CSS and JavaScript for Design (Integrated from the template)
 st.markdown(
     """
     <style>
-        /* Sticky Navigation */
+        /* Sticky Sidebar */
         [data-testid="stSidebar"] {
             position: sticky;
             top: 0;
@@ -120,111 +120,17 @@ st.markdown(
             transition: transform 0.3s ease, background-color 0.3s ease;
         }
 
-        /* Navbar Container */
-        .navbar {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
-            padding: 15px 20px;
-            border-radius: 0 0 15px 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 0.5s ease-in-out;
+        /* Main Container Styling */
+        [data-testid="stAppViewContainer"] > .main {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: #3a4f41;
+            transition: all 0.3s ease;
         }
 
-        /* Navigation Items */
-        .nav-item {
-            display: inline-block;
-            margin: 0 15px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s ease, transform 0.3s ease;
-            position: relative;
-        }
-
-        .nav-item:hover {
-            color: #FFD700; /* Gold hover effect */
-            transform: scale(1.1);
-            animation: slideUp 0.3s ease;
-        }
-
-        /* Dropdown Support */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #2E7D32;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            z-index: 1;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .dropdown-content a {
-            color: white;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-
-        .dropdown-content a:hover {
-            background-color: #388E3C;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        /* Dark/Light Mode Toggle */
-        .theme-toggle {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            cursor: pointer;
-            color: white;
-            font-size: 18px;
-            transition: color 0.3s ease;
-        }
-
-        .theme-toggle:hover {
-            color: #FFD700;
-        }
-
-        /* Mobile-Friendly Adjustments */
-        @media (max-width: 768px) {
-            .nav-item {
-                display: block;
-                margin: 10px 0;
-                text-align: center;
-            }
-            .dropdown-content {
-                position: relative;
-                width: 100%;
-                box-shadow: none;
-            }
-            .theme-toggle {
-                top: 10px;
-                right: 10px;
-            }
-        }
-
-        /* Custom Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(5px); }
-            to { transform: translateY(0); }
-        }
-
-        /* Dark Mode */
+        /* Dark Mode Styling */
         [data-testid="stAppViewContainer"].dark-mode {
             background-color: #2e2e2e;
             background-image: radial-gradient(circle, rgba(76, 175, 80, 0.2) 1px, transparent 1px);
@@ -245,20 +151,7 @@ st.markdown(
             border: 1px solid #4CAF50;
         }
 
-        .dark-mode .navbar {
-            background: linear-gradient(135deg, #2E7D32, #1B5E20);
-        }
-
-        /* Main Content Styling */
-        [data-testid="stAppViewContainer"] > .main {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            color: #3a4f41;
-            transition: all 0.3s ease;
-        }
-
+        /* Header Styling */
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
             color: #3a4f41;
@@ -266,6 +159,7 @@ st.markdown(
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
 
+        /* Input Fields */
         .stTextInput > div > input, .stNumberInput > div > input {
             width: 150px;
             padding: 4px;
@@ -286,7 +180,8 @@ st.markdown(
             color: #3a4f41;
         }
 
-        .stButton>button {
+        /* Buttons */
+        .stButton > button {
             background: linear-gradient(90deg, #4CAF50, #8BC34A);
             color: white;
             border-radius: 10px;
@@ -301,11 +196,12 @@ st.markdown(
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-        .stButton>button:hover {
+        .stButton > button:hover {
             background: linear-gradient(90deg, #388E3C, #689F38);
             transform: scale(1.05);
         }
 
+        /* Forms */
         .stForm {
             background: rgba(255, 255, 255, 0.98);
             padding: 20px;
@@ -320,12 +216,14 @@ st.markdown(
             background: rgba(40, 44, 52, 0.98);
         }
 
+        /* Images */
         .stImage {
             border-radius: 10px;
             margin: 10px auto;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
+        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -365,6 +263,17 @@ st.markdown(
 
         .dark-mode tr:hover {
             background-color: #555;
+        }
+
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(5px); }
+            to { transform: translateY(0); }
         }
     </style>
 
@@ -419,7 +328,7 @@ else:
     st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']} 👋")
     st.markdown("<p style='text-align: center; color: #4CAF50;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
 
-    # Modern Animated Navigation Bar
+    # Sidebar Navigation
     with st.sidebar:
         st.markdown('<h1 style="margin: 0;">🌍 Navigation</h1>', unsafe_allow_html=True)
         
@@ -429,36 +338,23 @@ else:
             unsafe_allow_html=True
         )
 
-        # Navigation Items with Dropdown
         nav_items = {
-                "Home": "🏠 Home",
-                "Crop Recommendation": "🌾 Crop Recommendation",
-                "Identify Plant Disease": "🦠 Identify Plant Disease",
-                "Crop Yield Prediction": "📊 Crop Yield Prediction",
-                "Today's Weather": "🌤️ Today's Weather",
-                "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
-                "Smart Farming Guidance": "📚 Smart Farming Guidance"
+            "Home": "🏠 Home",
+            "Crop Recommendation": "🌾 Crop Recommendation",
+            "Identify Plant Disease": "🦠 Identify Plant Disease",
+            "Crop Yield Prediction": "📊 Crop Yield Prediction",
+            "Today's Weather": "🌤️ Today's Weather",
+            "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
+            "Smart Farming Guidance": "📚 Smart Farming Guidance"
         }
 
         if 'menu' not in st.session_state:
             st.session_state['menu'] = "Home"
 
         for key, value in nav_items.items():
-            if isinstance(value, dict):
-                st.markdown(f'<div class="dropdown">', unsafe_allow_html=True)
-                st.markdown(f'<span class="nav-item">{value[list(value.keys())[0]]}</span>', unsafe_allow_html=True)
-                st.markdown('<div class="dropdown-content">', unsafe_allow_html=True)
-                for sub_key, sub_value in value.items():
-                    if st.button(sub_value, key=sub_key):
-                        st.session_state['menu'] = sub_key
-                        st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True)
-            else:
-                if st.button(value, key=key):
-                    st.session_state['menu'] = key
-                    st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+            if st.button(value, key=key):
+                st.session_state['menu'] = key
+                st.rerun()
 
     # Assign selected_menu from session state
     selected_menu = st.session_state['menu']
