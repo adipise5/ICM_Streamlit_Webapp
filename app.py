@@ -231,40 +231,43 @@ def predict_disease(image):
 st.markdown(
     """
     <style>
+    /* Background Image */
+        [data-testid="stAppViewContainer"] {
+            background-image: url('https://source.unsplash.com/1600x900/?nature,farmland');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: rgba(255, 255, 255, 0.1); /* Slight transparency */
+        }
+        
         /* Sticky Navigation */
-        [data-testid="stSidebar"] {
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            z-index: 1000;
-            transition: transform 0.3s ease, background-color 0.3s ease;
+       [data-testid="stSidebar"] {
+            background: #f1f8e9;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Navbar Container */
-        .navbar {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
-            padding: 15px 20px;
-            border-radius: 0 0 15px 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 0.5s ease-in-out;
+        .sidebar .sidebar-content {
+            padding-top: 0;
         }
 
-        /* Navigation Items */
         .nav-item {
-            display: inline-block;
-            margin: 0 15px;
+            padding: 10px;
+            margin: 5px 0;
+            background: #4CAF50;
             color: white;
+            border-radius: 8px;
+            text-align: center;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 500;
             cursor: pointer;
-            transition: color 0.3s ease, transform 0.3s ease;
-            position: relative;
+            transition: background 0.3s ease;
         }
 
         .nav-item:hover {
-            color: #FFD700; /* Gold hover effect */
-            transform: scale(1.1);
-            animation: slideUp 0.3s ease;
+            background: #388E3C;
         }
 
         /* Dropdown Support */
@@ -539,49 +542,17 @@ else:
     st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']} 👋")
     st.markdown("<p style='text-align: center; color: #4CAF50;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
 
-    # Modern Animated Navigation Bar
+    # Sidebar Navigation
     with st.sidebar:
-        st.markdown('<h1 style="margin: 0;">🌍 Navigation</h1>', unsafe_allow_html=True)
-        
-        # Theme Toggle Button
-        st.markdown(
-            '<div class="theme-toggle" onclick="toggleTheme()">💡</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown("<h2 style='color: #2E7D32;'>Navigation</h2>", unsafe_allow_html=True)
+        nav_items = ["Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
+                     "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"]
+        for item in nav_items:
+            if st.button(item, key=item):
+                st.session_state.menu = item
+                st.rerun()
 
-        # Navigation Items with Dropdown
-        nav_items = {
-                "Home": "🏠 Home",
-                "Crop Recommendation": "🌾 Crop Recommendation",
-                "Identify Plant Disease": "🦠 Identify Plant Disease",
-                "Crop Yield Prediction": "📊 Crop Yield Prediction",
-                "Today's Weather": "🌤️ Today's Weather",
-                "Fertilizer Recommendation": "🧪 Fertilizer Recommendation",
-                "Smart Farming Guidance": "📚 Smart Farming Guidance"
-        }
-
-        if 'menu' not in st.session_state:
-            st.session_state['menu'] = "Home"
-
-        for key, value in nav_items.items():
-            if isinstance(value, dict):
-                st.markdown(f'<div class="dropdown">', unsafe_allow_html=True)
-                st.markdown(f'<span class="nav-item">{value[list(value.keys())[0]]}</span>', unsafe_allow_html=True)
-                st.markdown('<div class="dropdown-content">', unsafe_allow_html=True)
-                for sub_key, sub_value in value.items():
-                    if st.button(sub_value, key=sub_key):
-                        st.session_state['menu'] = sub_key
-                        st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True)
-            else:
-                if st.button(value, key=key):
-                    st.session_state['menu'] = key
-                    st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # Assign selected_menu from session state
-    selected_menu = st.session_state['menu']
+    selected_menu = st.session_state.menu
 
     # Page Content
     if selected_menu == "Home":
