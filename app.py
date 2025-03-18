@@ -100,12 +100,12 @@ st.markdown(
     <style>
         /* Background Image */
         [data-testid="stAppViewContainer"] {
-            background-image: url('https://images.unsplash.com/photo-1620200423727-8127f75d7f53?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-image: url('https://source.unsplash.com/1600x900/?nature,farmland');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            background-color: rgba(255, 255, 255, 0.5); /* Slight transparency */
+            background-color: rgba(255, 255, 255, 0.1); /* Slight transparency */
         }
 
         /* Simplified Sidebar */
@@ -171,17 +171,22 @@ st.markdown(
         .stForm {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px; /* Increased gap to prevent overlap */
-            justify-content: space-between;
-            margin: 0 auto;
-            width: 700px;
+            justify-content: center; /* Center-align the form */
+            gap: 20px; /* 20px spacing between inputs */
         }
 
         .stTextInput, .stNumberInput, .stSelectbox {
-            flex: 1 1 48%; /* Slightly reduced to ensure no overlap */
+            flex: 0 1 300px; /* Fixed width for consistency */
             min-width: 150px;
-            max-width: 300px; /* Added max-width to control size */
-            margin: 0; /* Reset any default margins */
+            max-width: 300px;
+            margin: 0 auto; /* Center-align within column */
+            text-align: center; /* Center-align text inside inputs */
+        }
+
+        /* Center-align labels and input boxes */
+        .stTextInput > div > div, .stNumberInput > div > div, .stSelectbox > div > div {
+            margin: 0 auto;
+            text-align: center;
         }
 
         .stButton>button {
@@ -235,7 +240,7 @@ if 'menu' not in st.session_state:
 if 'user_info' not in st.session_state:
     st.title("🌱 Bhoomi - Farmer Registration")
     with st.form("user_form"):
-        col1, col2 = st.columns(2)
+        col1, col2 = st.columns([1, 1], gap="medium")  # Equal width columns with medium gap
         with col1:
             name = st.text_input("👤 Full Name")
             mobile = st.text_input("📞 Mobile Number")
@@ -266,7 +271,7 @@ else:
         st.subheader("📊 Financial Overview")
         with st.form("finance_form"):
             finance_type = st.selectbox("📋 Type:", ["Expense", "Profit"])
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns([1, 1], gap="medium")
             with col1:
                 date = st.date_input(f"📅 {finance_type} Date", value=datetime.today())
             with col2:
@@ -303,7 +308,7 @@ else:
     elif selected_menu == "Crop Recommendation":
         st.subheader("🌾 Crop Recommendation")
         with st.form("crop_form"):
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns([1, 1], gap="medium")
             with col1:
                 nitrogen = st.number_input("🌿 Nitrogen (kg/ha)", min_value=0.0, step=0.1)
                 phosphorus = st.number_input("🌱 Phosphorus (kg/ha)", min_value=0.0, step=0.1)
@@ -331,7 +336,7 @@ else:
     elif selected_menu == "Crop Yield Prediction":
         st.subheader("📊 Crop Yield Prediction")
         with st.form("yield_form"):
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns([1, 1], gap="medium")
             with col1:
                 country = st.selectbox("🌍 Country:", ["India", "Brazil", "USA"])
                 rainfall = st.number_input("💧 Rainfall (mm/year)", min_value=0.0, step=0.1)
@@ -346,7 +351,7 @@ else:
     elif selected_menu == "Today's Weather":
         st.subheader("🌤️ Weather Forecast")
         with st.form("weather_form"):
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns([1, 1], gap="medium")
             with col1:
                 zip_code = st.text_input("📍 ZIP Code")
             with col2:
@@ -361,7 +366,7 @@ else:
     elif selected_menu == "Fertilizer Recommendation":
         st.subheader("🧪 Fertilizer Recommendation")
         with st.form("fertilizer_form"):
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns([1, 1], gap="medium")
             with col1:
                 temperature = st.number_input("🌡️ Temperature (°C)", min_value=0.0, max_value=50.0, value=25.0, step=0.1)
                 humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
@@ -383,7 +388,7 @@ else:
     elif selected_menu == "Smart Farming Guidance":
         st.subheader("📚 Smart Farming Guidance")
         with st.form("guidance_form"):
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns([1, 1], gap="medium")
             with col1:
                 crop = st.text_input("🌾 Crop Name")
             with col2:
