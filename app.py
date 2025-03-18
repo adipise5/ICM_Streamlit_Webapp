@@ -1,5 +1,5 @@
 import streamlit as st
-from dotenv import load_dotenv  # Moved after st.set_page_config
+from dotenv import load_dotenv
 import requests
 from PIL import Image
 import numpy as np
@@ -100,22 +100,12 @@ st.markdown(
     <style>
         /* Background Image */
         [data-testid="stAppViewContainer"] {
-            background-image: url('https://source.unsplash.com/1600x900/?nature,farmland');
+            background-image: url('https://images.unsplash.com/photo-1620200423727-8127f75d7f53?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            background-color: rgba(255, 255, 255, 0.1); /* Slight transparency */
-        }
-
-        /* Content Box */
-        .content-box {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin: 20px auto;
-            max-width: 900px;
+            background-color: rgba(255, 255, 255, 0.5); /* Slight transparency */
         }
 
         /* Simplified Sidebar */
@@ -181,15 +171,17 @@ st.markdown(
         .stForm {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            width: 700px;
+            gap: 20px; /* Increased gap to prevent overlap */
             justify-content: space-between;
             margin: 0 auto;
+            width: 700px;
         }
 
         .stTextInput, .stNumberInput, .stSelectbox {
-            flex: 1 1 45%;
+            flex: 1 1 48%; /* Slightly reduced to ensure no overlap */
             min-width: 150px;
+            max-width: 300px; /* Added max-width to control size */
+            margin: 0; /* Reset any default margins */
         }
 
         .stButton>button {
@@ -241,7 +233,6 @@ if 'menu' not in st.session_state:
 
 # User registration
 if 'user_info' not in st.session_state:
-    st.markdown('<div class="content-box">', unsafe_allow_html=True)
     st.title("🌱 Bhoomi - Farmer Registration")
     with st.form("user_form"):
         col1, col2 = st.columns(2)
@@ -255,9 +246,7 @@ if 'user_info' not in st.session_state:
         st.session_state.user_info = {"name": name, "mobile": mobile, "place": place}
         st.session_state.menu = "Home"
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 else:
-    st.markdown('<div class="content-box">', unsafe_allow_html=True)
     st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']}")
 
     # Sidebar Navigation
