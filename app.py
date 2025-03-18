@@ -636,7 +636,7 @@ else:
         uploaded_file = st.file_uploader("📷 Upload Plant Image", type=["jpg", "png", "jpeg"])
         if uploaded_file:
             image = Image.open(uploaded_file)
-            st.image(image, caption="🌿 Uploaded Image", use_column_width=True)
+            st.image(image, caption="🌿 Uploaded Image", use_container_width=True)
             with st.spinner("🔍 Analyzing image..."):
                 disease = predict_disease(image)
             st.success(f"🌟 Detected Disease: **{disease}**")
@@ -731,6 +731,6 @@ else:
                 with st.spinner("🔍 Fetching guidance..."):
                     guidance = get_smart_farming_info(crop, country)
                 st.markdown(f"<div style='text-align: center;'>{guidance}</div>", unsafe_allow_html=True)
-                st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"🌿 {crop.capitalize()}", use_column_width=True)
+                st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"🌿 {crop.capitalize()}", use_container_width=True)
             else:
                 st.error("🚫 Please fill in all fields.")
