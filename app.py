@@ -184,6 +184,7 @@ st.markdown(
             gap: 10px;
             width: 700px;
             justify-content: space-between;
+            margin: 0 auto;
         }
 
         .stTextInput, .stNumberInput, .stSelectbox {
