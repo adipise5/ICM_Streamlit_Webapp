@@ -254,17 +254,17 @@ st.markdown(
         }
 
         .nav-item {
-            padding: 10px;
-            margin: 5px 0;
-            background: #4CAF50;
-            color: white;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+        padding: 10px;
+        margin: 5px 0;
+        background: #4CAF50;
+        color: white;
+        border-radius: 8px;
+        text-align: center;
+          font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s ease;
+            }
 
         .nav-item:hover {
             background: #388E3C;
@@ -544,13 +544,13 @@ else:
 
     # Sidebar Navigation
     with st.sidebar:
-        st.markdown("<h2 style='color: #2E7D32;'>Navigation</h2>", unsafe_allow_html=True)
-        nav_items = ["Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
-                     "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"]
-        for item in nav_items:
-            if st.button(item, key=item):
-                st.session_state.menu = item
-                st.rerun()
+    st.markdown("<h2 style='color: #2E7D32;'>Navigation</h2>", unsafe_allow_html=True)
+    nav_items = ["Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
+                 "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"]
+    for item in nav_items:
+        if st.button(item, key=item):
+            st.session_state.menu = item
+            st.rerun()
 
     selected_menu = st.session_state.menu
 
