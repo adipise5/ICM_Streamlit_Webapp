@@ -25,7 +25,7 @@ def load_model(model_path):
         st.error(f"🚨 Model file not found: {model_path}")
         return None
 
-# Load the crop recommendation model (fixed file name)
+# Load the crop recommendation model
 crop_model = load_model('models/crop_recommendation.pkl')
 
 # Load the fertilizer recommendation model and label encoders
@@ -58,8 +58,7 @@ def get_weather(zip_code, country_code="IN"):
     except requests.RequestException:
         return {"error": "🌐 Failed to connect to weather service"}
 
-# Static crop information database (sourced from FAO)
-# Static crop information database (sourced from provided document)
+# Static crop information database
 CROP_INFO = {
     "wheat": {
         "climate": "Temperate regions, prefers cool and moist weather during vegetative growth, dry and warm weather during grain filling.",
@@ -254,17 +253,17 @@ st.markdown(
         }
 
         .nav-item {
-        padding: 10px;
-        margin: 5px 0;
-        background: #4CAF50;
-        color: white;
-        border-radius: 8px;
-        text-align: center;
-          font-size: 16px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.3s ease;
-            }
+            padding: 10px;
+            margin: 5px 0;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
 
         .nav-item:hover {
             background: #388E3C;
@@ -513,13 +512,15 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Initialize session state for expenses, profit, and theme
+# Initialize session state
 if 'expenses' not in st.session_state:
     st.session_state.expenses = []
 if 'profit' not in st.session_state:
     st.session_state.profit = []
 if 'theme' not in st.session_state:
     st.session_state.theme = 'light'  # Default theme
+if 'menu' not in st.session_state:
+    st.session_state.menu = "Home"  # Default menu
 
 # User registration session
 if 'user_info' not in st.session_state:
@@ -543,14 +544,16 @@ else:
     st.markdown("<p style='text-align: center; color: #4CAF50;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
 
     # Sidebar Navigation
-with st.sidebar:
-    st.markdown("<h2 style='color: #2E7D32;'>Navigation</h2>", unsafe_allow_html=True)
-    nav_items = ["Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
-                 "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"]
-    for item in nav_items:
-        if st.button(item, key=item):
-            st.session_state.menu = item
-            st.rerun()
+    with st.sidebar:
+        st.markdown("<h2 style='color: #2E7D32;'>Navigation</h2>", unsafe_allow_html=True)
+        nav_items = ["Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
+                     "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"]
+        for item in nav_items:
+            if st.button(item, key=item):
+                st.session_state.menu = item
+                st.rerun()
+
+    selected_menu = st.session_state.menu
 
     # Page Content
     if selected_menu == "Home":
@@ -689,7 +692,7 @@ with st.sidebar:
         st.subheader("🧪 Fertilizer Recommendation")
         st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Crop & Soil Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("fertilizer_form"):
-            temparature = st.number_input("🌡️ Temparature (°C)", min_value=0.0, max_value=50.0, value=25.0, step=0.1)
+            temperature = st.number_input("🌡️ Temperature (°C)", min_value=0.0, max_value=50.0, value=25.0, step=0.1)  # Corrected typo
             humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
             moisture = st.number_input("💦 Moisture (%)", min_value=0.0, max_value=100.0, value=30.0, step=0.1)
             col1, col2 = st.columns(2)
@@ -703,10 +706,10 @@ with st.sidebar:
             submitted = st.form_submit_button("Recommend Fertilizer 🌟")
         if submitted:
             if fertilizer_model and label_encoder_soil and label_encoder_crop:
-                if all([temparature >= 0, humidity >= 0, moisture >= 0, nitrogen >= 0, potassium >= 0, phosphorous >= 0]):
+                if all([temperature >= 0, humidity >= 0, moisture >= 0, nitrogen >= 0, potassium >= 0, phosphorous >= 0]):
                     soil_encoded = label_encoder_soil.transform([soil_type])[0]
                     crop_encoded = label_encoder_crop.transform([crop_type])[0]
-                    features = np.array([[temparature, humidity, moisture, soil_encoded, crop_encoded, nitrogen, potassium, phosphorous]])
+                    features = np.array([[temperature, humidity, moisture, soil_encoded, crop_encoded, nitrogen, potassium, phosphorous]])
                     with st.spinner("🔍 Analyzing..."):
                         prediction = fertilizer_model.predict(features)
                     st.success(f"🌟 Recommended Fertilizer: **{prediction[0]}**")
