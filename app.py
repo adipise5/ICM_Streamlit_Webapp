@@ -182,6 +182,7 @@ st.markdown(
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            width: 700px;
             justify-content: space-between;
         }
 
