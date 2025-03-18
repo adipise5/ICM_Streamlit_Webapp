@@ -59,6 +59,7 @@ def get_weather(zip_code, country_code="IN"):
         return {"error": "🌐 Failed to connect to weather service"}
 
 # Static crop information database (sourced from FAO)
+# Static crop information database (sourced from provided document)
 CROP_INFO = {
     "wheat": {
         "climate": "Temperate regions, prefers cool and moist weather during vegetative growth, dry and warm weather during grain filling.",
@@ -80,6 +81,125 @@ CROP_INFO = {
         "fertilizers": "Nitrogen (120–180 kg/ha), Phosphorus (60–80 kg/ha), Potassium (40–60 kg/ha). Apply NPK 20-20-20 at planting, top-dress with nitrogen at knee-high stage.",
         "time_periods": "Sown in spring (April–May), harvested after 3–4 months (August–September).",
         "best_practices": "Plant in rows with 60–75 cm spacing, irrigate at 600–800 mm, control pests like maize borers, and rotate with legumes to improve soil fertility."
+    },
+    "sugarcane": {
+        "climate": "Tropical and subtropical regions, requires high humidity and temperatures 20–35°C.",
+        "soil": "Deep, well-drained loamy soil, pH 6.0–7.5.",
+        "fertilizers": "Nitrogen (150–250 kg/ha), Phosphorus (60–100 kg/ha), Potassium (90–120 kg/ha). Apply FYM and NPK in stages.",
+        "time_periods": "Planted in February–March or September–October, harvested after 10–12 months.",
+        "best_practices": "Requires frequent irrigation (1200–1500 mm), proper weed control, and ratoon management for better yield."
+    },
+    "cotton": {
+        "climate": "Warm, semi-arid regions, temperature 25–35°C, frost-sensitive.",
+        "soil": "Black cotton soil or sandy loam, pH 6.0–8.0.",
+        "fertilizers": "Nitrogen (80–120 kg/ha), Phosphorus (40–60 kg/ha), Potassium (40–60 kg/ha).",
+        "time_periods": "Sown in May–June, harvested in November–January.",
+        "best_practices": "Use Bt cotton for pest resistance, maintain row spacing of 60–75 cm, and ensure weed management."
+    },
+    "jute": {
+        "climate": "Hot and humid, temperature 24–37°C, requires high rainfall.",
+        "soil": "Well-drained alluvial soil, pH 5.0–7.5.",
+        "fertilizers": "Nitrogen (40–60 kg/ha), Phosphorus (20–40 kg/ha), Potassium (20–40 kg/ha).",
+        "time_periods": "Sown in March–May, harvested in July–September.",
+        "best_practices": "Requires retting for fiber extraction, proper water management, and good seed selection."
+    },
+    "tea": {
+        "climate": "Cool, humid climate with 1500–2500 mm rainfall.",
+        "soil": "Well-drained acidic loamy soil, pH 4.5–5.5.",
+        "fertilizers": "Organic manure, Nitrogen (60–100 kg/ha).",
+        "time_periods": "Planted throughout the year, harvested every 10–15 days.",
+        "best_practices": "Requires shade trees, pruning, and pest control for optimal yield."
+    },
+    "coffee": {
+        "climate": "Warm, humid climate, temperature 15–28°C.",
+        "soil": "Well-drained loamy soil, pH 5.0–6.5.",
+        "fertilizers": "Organic fertilizers preferred, Nitrogen (40–80 kg/ha).",
+        "time_periods": "Planted in June–September, harvested in December–March.",
+        "best_practices": "Requires shade, hand-picking, and pest management for better quality beans."
+    },
+    "groundnut": {
+        "climate": "Warm, dry climate, temperature 25–35°C.",
+        "soil": "Well-drained sandy loam, pH 6.0–7.5.",
+        "fertilizers": "Phosphorus (20–40 kg/ha), Potassium (30–50 kg/ha).",
+        "time_periods": "Sown in June–July, harvested in October.",
+        "best_practices": "Proper weeding and irrigation required to enhance pod formation."
+    },
+    "soybean": {
+        "climate": "Warm, moderate rainfall, temperature 20–30°C.",
+        "soil": "Well-drained loamy soil, pH 6.0–7.5.",
+        "fertilizers": "Nitrogen (20–40 kg/ha), Phosphorus (40–60 kg/ha).",
+        "time_periods": "Sown in June–July, harvested in September–October.",
+        "best_practices": "Requires proper crop rotation and spacing for optimal growth."
+    },
+    "mustard": {
+        "climate": "Cool and dry climate, temperature 10–25°C.",
+        "soil": "Well-drained sandy loam to clayey soil, pH 5.5–8.5.",
+        "fertilizers": "Nitrogen (60–80 kg/ha), Phosphorus (40–60 kg/ha), Potassium (30–50 kg/ha).",
+        "time_periods": "Sown in October–November, harvested in March–April.",
+        "best_practices": "Requires minimal irrigation, timely weed control, and disease-resistant varieties."
+    },
+    "sunflower": {
+        "climate": "Warm and dry climate, temperature 20–30°C.",
+        "soil": "Well-drained loamy soil, pH 6.0–7.5.",
+        "fertilizers": "Nitrogen (80–100 kg/ha), Phosphorus (40–50 kg/ha), Potassium (40–50 kg/ha).",
+        "time_periods": "Sown in February–March, harvested in June–July.",
+        "best_practices": "Requires full sunlight, proper spacing (30–45 cm), and pest management."
+    },
+    "potato": {
+        "climate": "Cool climate, temperature 10–25°C.",
+        "soil": "Well-drained sandy loam soil, pH 5.0–6.5.",
+        "fertilizers": "Nitrogen (80–120 kg/ha), Phosphorus (60–80 kg/ha), Potassium (80–100 kg/ha).",
+        "time_periods": "Sown in October–November, harvested in January–February.",
+        "best_practices": "Requires ridging, proper irrigation, and disease-resistant seed varieties."
+    },
+    "onion": {
+        "climate": "Warm climate, temperature 15–30°C.",
+        "soil": "Well-drained sandy loam, pH 6.0–7.5.",
+        "fertilizers": "Nitrogen (100–120 kg/ha), Phosphorus (50–70 kg/ha), Potassium (60–80 kg/ha).",
+        "time_periods": "Sown in October–November, harvested in March–April.",
+        "best_practices": "Requires proper spacing (15–20 cm), moderate irrigation, and pest control."
+    },
+    "tomato": {
+        "climate": "Warm climate, temperature 20–30°C.",
+        "soil": "Well-drained loamy soil, pH 5.5–7.0.",
+        "fertilizers": "Nitrogen (100–150 kg/ha), Phosphorus (50–70 kg/ha), Potassium (70–90 kg/ha).",
+        "time_periods": "Sown in June–July or September–October, harvested in 3–4 months.",
+        "best_practices": "Requires staking, proper watering, and pest control for optimal yield."
+    },
+    "banana": {
+        "climate": "Tropical and humid, temperature 20–35°C.",
+        "soil": "Well-drained loamy soil, pH 5.5–7.0.",
+        "fertilizers": "Nitrogen (200–250 kg/ha), Phosphorus (60–80 kg/ha), Potassium (250–300 kg/ha).",
+        "time_periods": "Planted year-round, harvested in 9–12 months.",
+        "best_practices": "Requires deep irrigation, proper spacing (1.5–2 m), and wind protection."
+    },
+    "mango": {
+        "climate": "Warm and dry, temperature 24–35°C.",
+        "soil": "Well-drained loamy soil, pH 5.5–7.5.",
+        "fertilizers": "Nitrogen (150–200 kg/tree), Phosphorus (40–60 kg/tree), Potassium (60–100 kg/tree).",
+        "time_periods": "Planted in July–September, harvested in April–June.",
+        "best_practices": "Requires pruning, irrigation during flowering, and pest control."
+    },
+    "apple": {
+        "climate": "Cool temperate, temperature 5–20°C.",
+        "soil": "Well-drained sandy loam, pH 5.5–6.5.",
+        "fertilizers": "Organic manure, Nitrogen (100–150 kg/tree), Phosphorus (40–60 kg/tree).",
+        "time_periods": "Planted in December–February, harvested in July–September.",
+        "best_practices": "Requires cross-pollination, irrigation, and pruning for good yield."
+    },
+    "chickpea": {
+        "climate": "Cool and dry, temperature 10–30°C.",
+        "soil": "Well-drained sandy loam, pH 5.5–7.5.",
+        "fertilizers": "Phosphorus (20–40 kg/ha), Potassium (20–40 kg/ha).",
+        "time_periods": "Sown in October–November, harvested in March–April.",
+        "best_practices": "Requires deep soil, minimal irrigation, and pest control."
+    },
+    "barley": {
+        "climate": "Cool and dry, temperature 10–25°C.",
+        "soil": "Well-drained loamy soil, pH 6.0–7.5.",
+        "fertilizers": "Nitrogen (40–80 kg/ha), Phosphorus (30–50 kg/ha), Potassium (30–50 kg/ha).",
+        "time_periods": "Sown in October–November, harvested in March–April.",
+        "best_practices": "Requires less irrigation, proper weeding, and crop rotation."
     }
 }
 
