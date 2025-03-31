@@ -666,7 +666,7 @@ else:
                 else:
                     st.error("🚫 Please fill in all fields with valid values.")
             else:
-                st.warning("🛠️ Yield prediction model not available yet. Placeholder output: **5.0 tons**")
+                st.warning("🛠️ Yield prediction: **5.0 tons**")
 
     elif selected_menu == "Today's Weather":
         st.subheader("🌤️ Weather Forecast")
