@@ -9,16 +9,12 @@ from tensorflow.keras.preprocessing import image as keras_image
 import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime
-from googletrans import Translator, LANGUAGES  # Import googletrans for translation
 
 # Load environment variables (if needed)
 load_dotenv()
 
 # Must be the first Streamlit command
 st.set_page_config(page_title="Bhoomi Dashboard", layout="wide", initial_sidebar_state="expanded")
-
-# Initialize Translator
-translator = Translator()
 
 # Load ML models and label encoders with caching and error handling
 @st.cache_resource
@@ -29,20 +25,25 @@ def load_model(model_path):
         st.error(f"🚨 Model file not found: {model_path}")
         return None
 
-# Load models (unchanged)
+# Load the crop recommendation model
 crop_model = load_model('models/crop_recommendation.pkl')
+
+# Load the fertilizer recommendation model and label encoders
 fertilizer_model = load_model('models/fertilizer_recommendation_model.pkl')
 label_encoder_soil = load_model('models/label_encoder_soil.pkl')
 label_encoder_crop = load_model('models/label_encoder_crop.pkl')
+
+# Placeholder for yield model
 yield_model = None
 
+# Placeholder for disease model
 @st.cache_resource
 def load_disease_model():
     return None
 
 disease_model = load_disease_model()
 
-# Weather API function (unchanged)
+# Weather API function
 def get_weather(zip_code, country_code="IN"):
     api_key = "f938f65079af3e9bd2414c6556df724b"
     url = f"http://api.openweathermap.org/geo/1.0/zip?zip={zip_code},{country_code}&appid={api_key}"
@@ -223,17 +224,8 @@ def predict_disease(image):
     if disease_model is None:
         return "🛠️ Disease detection model not loaded (placeholder)"
     img = keras_image.img_to_array(image.resize((224, 224))) / 255.0
-    img = NominalEncoder(img, axis=0)
+    img = np.expand_dims(img, axis=0)
     return "🌿 Disease Name (placeholder)"
-
-# Translation Function
-def translate_text(text, dest_language):
-    try:
-        translated = translator.translate(text, dest=dest_language)
-        return translated.text
-    except Exception as e:
-        st.warning(f"Translation failed: {str(e)}. Displaying original text.")
-        return text
 
 # Custom CSS and JavaScript for animated navbar
 st.markdown(
@@ -527,316 +519,216 @@ if 'expenses' not in st.session_state:
 if 'profit' not in st.session_state:
     st.session_state.profit = []
 if 'theme' not in st.session_state:
-    st.session_state.theme = 'light'
+    st.session_state.theme = 'light'  # Default theme
 if 'menu' not in st.session_state:
-    st.session_state.menu = "Home"
-if 'language' not in st.session_state:
-    st.session_state.language = 'en'  # Default to English
-
-# Sidebar with Language Selection
-with st.sidebar:
-    st.markdown("<h2 style='color: #2E7D32;'>Navigation</h2>", unsafe_allow_html=True)
-    nav_items = ["Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
-                 "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"]
-    for item in nav_items:
-        if st.button(item, key=item):
-            st.session_state.menu = item
-            st.rerun()
-
-    # Language selection dropdown
-    language_options = {name: code for code, name in LANGUAGES.items()}
-    selected_language_name = st.selectbox("🌐 Select Language", list(language_options.keys()), index=list(language_options.keys()).index('english'))
-    st.session_state.language = language_options[selected_language_name]
+    st.session_state.menu = "Home"  # Default menu
 
 # User registration session
 if 'user_info' not in st.session_state:
-    title = translate_text("🌱 Bhoomi - Farmer Registration 📝", st.session_state.language)
-    st.title(title)
-    subtitle = translate_text("Enter Farmer Details Below 🎉", st.session_state.language)
-    st.markdown(f"<p style='text-align: center; color: #4CAF50;'>{subtitle}</p>", unsafe_allow_html=True)
+    st.title("🌱 Bhoomi - Farmer Registration 📝")
+    st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Farmer Details Below 🎉</p>", unsafe_allow_html=True)
     with st.form("user_form", clear_on_submit=True):
-        name_label = translate_text("👤 Full Name", st.session_state.language)
-        mobile_label = translate_text("📞 Mobile Number", st.session_state.language)
-        place_label = translate_text("🏡 Place", st.session_state.language)
-        name = st.text_input(name_label)
-        mobile = st.text_input(mobile_label, help=translate_text("e.g., 9876543210", st.session_state.language))
-        place = st.text_input(place_label)
-        submit_label = translate_text("Submit 🚀", st.session_state.language)
-        submitted = st.form_submit_button(submit_label)
+        name = st.text_input("👤 Full Name")
+        mobile = st.text_input("📞 Mobile Number", help="e.g., 9876543210")
+        place = st.text_input("🏡 Place")
+        submitted = st.form_submit_button("Submit 🚀")
     if submitted:
         if name and mobile and place:
             st.session_state.user_info = {"name": name, "mobile": mobile, "place": place}
-            success_msg = translate_text("✅ Registration successful! Redirecting to dashboard...", st.session_state.language)
-            st.success(success_msg)
+            st.success("✅ Registration successful! Redirecting to dashboard...")
             st.session_state.menu = "Home"
             st.rerun()
         else:
-            error_msg = translate_text("🚫 Please fill in all fields.", st.session_state.language)
-            st.error(error_msg)
+            st.error("🚫 Please fill in all fields.")
 else:
-    welcome_msg = translate_text(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']} 👋", st.session_state.language)
-    st.title(welcome_msg)
-    dashboard_msg = translate_text("Your Personalized Farming Dashboard 🌟", st.session_state.language)
-    st.markdown(f"<p style='text-align: center; color: #4CAF50;'>{dashboard_msg}</p>", unsafe_allow_html=True)
+    st.title(f"🌱 Bhoomi - Welcome {st.session_state.user_info['name']} 👋")
+    st.markdown("<p style='text-align: center; color: #4CAF50;'>Your Personalized Farming Dashboard 🌟</p>", unsafe_allow_html=True)
+
+    # Sidebar Navigation
+    with st.sidebar:
+        st.markdown("<h2 style='color: #2E7D32;'>Navigation</h2>", unsafe_allow_html=True)
+        nav_items = ["Home", "Crop Recommendation", "Identify Plant Disease", "Crop Yield Prediction", 
+                     "Today's Weather", "Fertilizer Recommendation", "Smart Farming Guidance"]
+        for item in nav_items:
+            if st.button(item, key=item):
+                st.session_state.menu = item
+                st.rerun()
 
     selected_menu = st.session_state.menu
 
-    # Page Content with Translation
+    # Page Content
     if selected_menu == "Home":
-        financial_title = translate_text("📊 Financial Overview", st.session_state.language)
-        st.subheader(financial_title)
-        finance_subtitle = translate_text("Track Your Finances 🎉", st.session_state.language)
-        st.markdown(f"<p style='text-align: center; color: #4CAF50;'>{finance_subtitle}</p>", unsafe_allow_html=True)
+        st.subheader("📊 Financial Overview")
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Track Your Finances 🎉</p>", unsafe_allow_html=True)
 
         with st.form("finance_form"):
-            finance_type_label = translate_text("📋 Select Type:", st.session_state.language)
-            finance_type = st.selectbox(finance_type_label, [translate_text("Expense", st.session_state.language), translate_text("Profit", st.session_state.language)])
-            if finance_type == translate_text("Expense", st.session_state.language):
-                expense_date_label = translate_text("📅 Expense Date", st.session_state.language)
-                expense_amount_label = translate_text("💸 Expense Amount", st.session_state.language)
-                expense_purpose_label = translate_text("📝 Expense For", st.session_state.language)
-                expense_date = st.date_input(expense_date_label, value=datetime.today())
-                expense_amount = st.number_input(expense_amount_label, min_value=0.0, value=0.0, step=0.1)
-                expense_purpose = st.text_input(expense_purpose_label)
-                submit_label = translate_text("Add Expense 🚀", st.session_state.language)
-                submitted = st.form_submit_button(submit_label)
+            finance_type = st.selectbox("📋 Select Type:", ["Expense", "Profit"])
+            if finance_type == "Expense":
+                expense_date = st.date_input("📅 Expense Date", value=datetime.today())
+                expense_amount = st.number_input("💸 Expense Amount", min_value=0.0, value=0.0, step=0.1)
+                expense_purpose = st.text_input("📝 Expense For")
+                submitted = st.form_submit_button("Add Expense 🚀")
                 if submitted:
                     if expense_amount >= 0 and expense_purpose:
                         st.session_state.expenses.append({"date": expense_date.strftime('%Y-%m-%d'), "amount": expense_amount, "purpose": expense_purpose})
-                        success_msg = translate_text("✅ Expense added successfully!", st.session_state.language)
-                        st.success(success_msg)
+                        st.success("✅ Expense added successfully!")
                         st.rerun()
                     else:
-                        error_msg = translate_text("🚫 Please fill in all fields with valid amounts.", st.session_state.language)
-                        st.error(error_msg)
+                        st.error("🚫 Please fill in all fields with valid amounts.")
             else:
-                profit_date_label = translate_text("📅 Profit Date", st.session_state.language)
-                profit_amount_label = translate_text("💰 Profit Amount", st.session_state.language)
-                profit_date = st.date_input(profit_date_label, value=datetime.today())
-                profit_amount = st.number_input(profit_amount_label, min_value=0.0, value=0.0, step=0.1)
-                submit_label = translate_text("Add Profit 🚀", st.session_state.language)
-                submitted = st.form_submit_button(submit_label)
+                profit_date = st.date_input("📅 Profit Date", value=datetime.today())
+                profit_amount = st.number_input("💰 Profit Amount", min_value=0.0, value=0.0, step=0.1)
+                submitted = st.form_submit_button("Add Profit 🚀")
                 if submitted:
                     if profit_amount >= 0:
                         st.session_state.profit.append({"date": profit_date.strftime('%Y-%m-%d'), "amount": profit_amount})
-                        success_msg = translate_text("✅ Profit added successfully!", st.session_state.language)
-                        st.success(success_msg)
+                        st.success("✅ Profit added successfully!")
                         st.rerun()
                     else:
-                        error_msg = translate_text("🚫 Please enter a valid profit amount.", st.session_state.language)
-                        st.error(error_msg)
+                        st.error("🚫 Please enter a valid profit amount.")
 
         col1, col2 = st.columns(2)
         with col1:
-            expenses_title = translate_text("💸 Expenses", st.session_state.language)
-            st.subheader(expenses_title)
+            st.subheader("💸 Expenses")
             if st.session_state.expenses:
                 df_expenses = pd.DataFrame(st.session_state.expenses)
                 total_expense = df_expenses['amount'].sum()
                 st.table(df_expenses)
-                total_expense_label = translate_text("**Total Expense:** ₹{:.2f}", st.session_state.language).format(total_expense)
-                st.markdown(total_expense_label)
+                st.markdown(f"**Total Expense:** ₹{total_expense:.2f}")
             else:
-                no_data_msg = translate_text("📊 No expense data to display.", st.session_state.language)
-                st.write(no_data_msg)
+                st.write("📊 No expense data to display.")
         with col2:
-            profits_title = translate_text("💰 Profits", st.session_state.language)
-            st.subheader(profits_title)
+            st.subheader("💰 Profits")
             if st.session_state.profit:
                 df_profit = pd.DataFrame(st.session_state.profit)
                 total_profit = df_profit['amount'].sum()
                 st.table(df_profit)
-                total_profit_label = translate_text("**Total Profit:** ₹{:.2f}", st.session_state.language).format(total_profit)
-                st.markdown(total_profit_label)
+                st.markdown(f"**Total Profit:** ₹{total_profit:.2f}")
             else:
-                no_data_msg = translate_text("📊 No profit data to display.", st.session_state.language)
-                st.write(no_data_msg)
+                st.write("📊 No profit data to display.")
 
     elif selected_menu == "Crop Recommendation":
-        crop_title = translate_text("🌾 Crop Recommendation System", st.session_state.language)
-        st.subheader(crop_title)
-        crop_subtitle = translate_text("Enter Soil and Climate Details Below 🎉", st.session_state.language)
-        st.markdown(f"<p style='text-align: center; color: #4CAF50;'>{crop_subtitle}</p>", unsafe_allow_html=True)
+        st.subheader("🌾 Crop Recommendation System")
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Soil and Climate Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("crop_form"):
-            nitrogen_label = translate_text("🌿 Nitrogen (N) (kg/ha)", st.session_state.language)
-            phosphorus_label = translate_text("🌱 Phosphorus (P) (kg/ha)", st.session_state.language)
-            potassium_label = translate_text("🌿 Potassium (K) (kg/ha)", st.session_state.language)
-            temperature_label = translate_text("🌡️ Temperature (°C)", st.session_state.language)
-            humidity_label = translate_text("💧 Humidity (%)", st.session_state.language)
-            ph_label = translate_text("⚗️ pH Level", st.session_state.language)
-            rainfall_label = translate_text("☔ Rainfall (mm)", st.session_state.language)
-            nitrogen = st.number_input(nitrogen_label, min_value=0.0, value=0.0, step=0.1)
-            phosphorus = st.number_input(phosphorus_label, min_value=0.0, value=0.0, step=0.1)
-            potassium = st.number_input(potassium_label, min_value=0.0, value=0.0, step=0.1)
-            temperature = st.number_input(temperature_label, min_value=0.0, max_value=50.0, value=25.0, step=0.1)
-            humidity = st.number_input(humidity_label, min_value=0.0, max_value=100.0, value=50.0, step=0.1)
-            ph = st.number_input(ph_label, min_value=0.0, max_value=14.0, value=7.0, step=0.1)
-            rainfall = st.number_input(rainfall_label, min_value=0.0, value=0.0, step=0.1)
-            submit_label = translate_text("Predict Crop 🌟", st.session_state.language)
-            submitted = st.form_submit_button(submit_label)
+            nitrogen = st.number_input("🌿 Nitrogen (N) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            phosphorus = st.number_input("🌱 Phosphorus (P) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            potassium = st.number_input("🌿 Potassium (K) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            temperature = st.number_input("🌡️ Temperature (°C)", min_value=0.0, max_value=50.0, value=25.0, step=0.1)
+            humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
+            ph = st.number_input("⚗️ pH Level", min_value=0.0, max_value=14.0, value=7.0, step=0.1)
+            rainfall = st.number_input("☔ Rainfall (mm)", min_value=0.0, value=0.0, step=0.1)
+            submitted = st.form_submit_button("Predict Crop 🌟")
         if submitted and crop_model:
             if all([nitrogen >= 0, phosphorus >= 0, potassium >= 0, temperature >= 0, humidity >= 0, ph >= 0, rainfall >= 0]):
                 features = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
-                with st.spinner(translate_text("🔍 Analyzing soil and climate data...", st.session_state.language)):
+                with st.spinner("🔍 Analyzing soil and climate data..."):
                     prediction = crop_model.predict(features)
-                success_msg = translate_text("🌟 Recommended Crop: **{}**", st.session_state.language).format(prediction[0])
-                st.success(success_msg)
+                st.success(f"🌟 Recommended Crop: **{prediction[0]}**")
             else:
-                error_msg = translate_text("🚫 Please fill in all fields with valid values.", st.session_state.language)
-                st.error(error_msg)
+                st.error("🚫 Please fill in all fields with valid values.")
         elif submitted and not crop_model:
-            error_msg = translate_text("🚫 Crop recommendation model failed to load. Please ensure the model file exists.", st.session_state.language)
-            st.error(error_msg)
+            st.error("🚫 Crop recommendation model failed to load. Please ensure the model file exists.")
 
     elif selected_menu == "Identify Plant Disease":
-        disease_title = translate_text("🦠 Plant Disease Identification", st.session_state.language)
-        st.subheader(disease_title)
-        disease_subtitle = translate_text("Upload Plant Image Below 📸", st.session_state.language)
-        st.markdown(f"<p style='text-align: center; color: #4CAF50;'>{disease_subtitle}</p>", unsafe_allow_html=True)
-        upload_label = translate_text("📷 Upload Plant Image", st.session_state.language)
-        uploaded_file = st.file_uploader(upload_label, type=["jpg", "png", "jpeg"])
-        if uploaded_file:
-            image = Image.open(uploaded_file)
-            caption = translate_text("🌿 Uploaded Image", st.session_state.language)
-            st.image(image, caption=caption, use_container_width=True)
-            success_msg = translate_text("🌟 Detected Disease: **cercospora leaf spot**", st.session_state.language)
-            st.success(success_msg)
+    st.subheader("🦠 Plant Disease Identification")
+    st.markdown("<p style='text-align: center; color: #4CAF50;'>Upload Plant Image Below 📸</p>", unsafe_allow_html=True)
+    uploaded_file = st.file_uploader("📷 Upload Plant Image", type=["jpg", "png", "jpeg"])
+    if uploaded_file:
+        image = Image.open(uploaded_file)
+        st.image(image, caption="🌿 Uploaded Image", use_container_width=True)
+        st.success(f"🌟 Detected Disease: **cercospora leaf spot**")
 
     elif selected_menu == "Crop Yield Prediction":
-        yield_title = translate_text("📊 Crop Yield Prediction", st.session_state.language)
-        st.subheader(yield_title)
-        yield_subtitle = translate_text("Enter Crop Details Below 🎉", st.session_state.language)
-        st.markdown(f"<p style='text-align: center; color: #4CAF50;'>{yield_subtitle}</p>", unsafe_allow_html=True)
+        st.subheader("📊 Crop Yield Prediction")
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Crop Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("yield_form"):
             col1, col2 = st.columns(2)
             with col1:
-                country_label = translate_text("🌍 Select Country:", st.session_state.language)
                 countries = ["India", "Brazil", "USA", "Australia", "Albania"]
-                country = st.selectbox(country_label, [translate_text(c, st.session_state.language) for c in countries])
+                country = st.selectbox("🌍 Select Country:", countries)
             with col2:
-                crop_label = translate_text("🌾 Select Crop:", st.session_state.language)
                 crops = ["Maize", "Wheat", "Rice", "Soybean", "Barley"]
-                crop = st.selectbox(crop_label, [translate_text(c, st.session_state.language) for c in crops])
-            rainfall_label = translate_text("💧 Average Rainfall (mm/year)", st.session_state.language)
-            pesticide_label = translate_text("🛡️ Pesticide Use (tonnes)", st.session_state.language)
-            temperature_label = translate_text("🌡️ Average Temperature (°C)", st.session_state.language)
-            rainfall = st.number_input(rainfall_label, min_value=0.0, value=0.0, step=0.1)
-            pesticide = st.number_input(pesticide_label, min_value=0.0, value=0.0, step=0.1)
-            temperature = st.number_input(temperature_label, min_value=-50.0, max_value=50.0, value=0.0, step=0.1)
-            submit_label = translate_text("Predict Yield 🚀", st.session_state.language)
-            submitted = st.form_submit_button(submit_label)
+                crop = st.selectbox("🌾 Select Crop:", crops)
+            rainfall = st.number_input("💧 Average Rainfall (mm/year)", min_value=0.0, value=0.0, step=0.1)
+            pesticide = st.number_input("🛡️ Pesticide Use (tonnes)", min_value=0.0, value=0.0, step=0.1)
+            temperature = st.number_input("🌡️ Average Temperature (°C)", min_value=-50.0, max_value=50.0, value=0.0, step=0.1)
+            submitted = st.form_submit_button("Predict Yield 🚀")
         if submitted:
             if yield_model:
                 if all([rainfall >= 0, pesticide >= 0, temperature >= 0]):
                     features = np.array([[rainfall, pesticide, temperature]])
-                    with st.spinner(translate_text("🔍 Predicting yield...", st.session_state.language)):
+                    with st.spinner("🔍 Predicting yield..."):
                         prediction = yield_model.predict(features)
-                    success_msg = translate_text("🌟 Predicted Yield: **{:.2f} tons**", st.session_state.language).format(prediction[0])
-                    st.success(success_msg)
+                    st.success(f"🌟 Predicted Yield: **{prediction[0]:.2f} tons**")
                 else:
-                    error_msg = translate_text("🚫 Please fill in all fields with valid values.", st.session_state.language)
-                    st.error(error_msg)
+                    st.error("🚫 Please fill in all fields with valid values.")
             else:
-                warning_msg = translate_text("🛠️ Yield prediction: **5.0 tons**", st.session_state.language)
-                st.warning(warning_msg)
+                st.warning("🛠️ Yield prediction: **5.0 tons**")
 
     elif selected_menu == "Today's Weather":
-        weather_title = translate_text("🌤️ Weather Forecast", st.session_state.language)
-        st.subheader(weather_title)
-        weather_subtitle = translate_text("Enter Location Details Below 📍", st.session_state.language)
-        st.markdown(f"<p style='text-align: center; color: #4CAF50;'>{weather_subtitle}</p>", unsafe_allow_html=True)
+        st.subheader("🌤️ Weather Forecast")
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Location Details Below 📍</p>", unsafe_allow_html=True)
         with st.form("weather_form"):
-            zip_label = translate_text("📍 Enter ZIP Code", st.session_state.language)
-            country_label = translate_text("🌍 Enter Country Code", st.session_state.language)
-            zip_code = st.text_input(zip_label, help=translate_text("e.g., 110001 for Delhi", st.session_state.language))
-            country_code = st.text_input(country_label, value="IN", help=translate_text("e.g., IN for India", st.session_state.language))
-            submit_label = translate_text("Get Weather 🌞", st.session_state.language)
-            submitted = st.form_submit_button(submit_label)
+            zip_code = st.text_input("📍 Enter ZIP Code", help="e.g., 110001 for Delhi")
+            country_code = st.text_input("🌍 Enter Country Code", value="IN", help="e.g., IN for India")
+            submitted = st.form_submit_button("Get Weather 🌞")
         if submitted:
-            with st.spinner(translate_text("🔍 Fetching weather data...", st.session_state.language)):
+            with st.spinner("🔍 Fetching weather data..."):
                 weather_data = get_weather(zip_code, country_code)
             if "error" in weather_data:
-                st.error(translate_text(weather_data["error"], st.session_state.language))
+                st.error(weather_data["error"])
             elif weather_data.get('main'):
                 city_name = weather_data.get('name', 'Unknown Location')
-                location_msg = translate_text("📍 <b>Location</b>: {}", st.session_state.language).format(city_name)
-                temp_msg = translate_text("🌡️ <b>Temperature</b>: {}°C", st.session_state.language).format(weather_data['main']['temp'])
-                weather_msg = translate_text("⛅ <b>Weather</b>: {}", st.session_state.language).format(weather_data['weather'][0]['description'].capitalize())
-                humidity_msg = translate_text("💧 <b>Humidity</b>: {}%", st.session_state.language).format(weather_data['main']['humidity'])
-                st.markdown(f"<p style='text-align: center;'>{location_msg}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='text-align: center;'>{temp_msg}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='text-align: center;'>{weather_msg}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='text-align: center;'>{humidity_msg}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: center;'>📍 <b>Location</b>: {city_name}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: center;'>🌡️ <b>Temperature</b>: {weather_data['main']['temp']}°C</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: center;'>⛅ <b>Weather</b>: {weather_data['weather'][0]['description'].capitalize()}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: center;'>💧 <b>Humidity</b>: {weather_data['main']['humidity']}%</p>", unsafe_allow_html=True)
             else:
-                error_msg = translate_text("🚫 Could not retrieve weather data.", st.session_state.language)
-                st.error(error_msg)
+                st.error("🚫 Could not retrieve weather data.")
 
     elif selected_menu == "Fertilizer Recommendation":
-        fertilizer_title = translate_text("🧪 Fertilizer Recommendation", st.session_state.language)
-        st.subheader(fertilizer_title)
-        fertilizer_subtitle = translate_text("Enter Crop & Soil Details Below 🎉", st.session_state.language)
-        st.markdown(f"<p style='text-align: center; color: #4CAF50;'>{fertilizer_subtitle}</p>", unsafe_allow_html=True)
+        st.subheader("🧪 Fertilizer Recommendation")
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Crop & Soil Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("fertilizer_form"):
-            temperature_label = translate_text("🌡️ Temperature (°C)", st.session_state.language)
-            humidity_label = translate_text("💧 Humidity (%)", st.session_state.language)
-            moisture_label = translate_text("💦 Moisture (%)", st.session_state.language)
-            soil_label = translate_text("🌍 Soil Type", st.session_state.language)
-            crop_label = translate_text("🌾 Crop Type", st.session_state.language)
-            nitrogen_label = translate_text("🌿 Nitrogen (N) (kg/ha)", st.session_state.language)
-            potassium_label = translate_text("🌿 Potassium (K) (kg/ha)", st.session_state.language)
-            phosphorous_label = translate_text("🌱 Phosphorous (P) (kg/ha)", st.session_state.language)
-            temperature = st.number_input(temperature_label, min_value=0.0, max_value=50.0, value=25.0, step=0.1)
-            humidity = st.number_input(humidity_label, min_value=0.0, max_value=100.0, value=50.0, step=0.1)
-            moisture = st.number_input(moisture_label, min_value=0.0, max_value=100.0, value=30.0, step=0.1)
+            temperature = st.number_input("🌡️ Temperature (°C)", min_value=0.0, max_value=50.0, value=25.0, step=0.1)  # Corrected typo
+            humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
+            moisture = st.number_input("💦 Moisture (%)", min_value=0.0, max_value=100.0, value=30.0, step=0.1)
             col1, col2 = st.columns(2)
             with col1:
-                soil_types = ["Sandy", "Loamy", "Black", "Red", "Clayey"]
-                soil_type = st.selectbox(soil_label, [translate_text(s, st.session_state.language) for s in soil_types])
+                soil_type = st.selectbox("🌍 Soil Type", ["Sandy", "Loamy", "Black", "Red", "Clayey"])
             with col2:
-                crop_types = ["Maize", "Sugarcane", "Cotton", "Tobacco", "Paddy", "Barley", "Wheat", "Millets", "Oil seeds", "Pulses", "Ground Nuts"]
-                crop_type = st.selectbox(crop_label, [translate_text(c, st.session_state.language) for c in crop_types])
-            nitrogen = st.number_input(nitrogen_label, min_value=0.0, value=0.0, step=0.1)
-            potassium = st.number_input(potassium_label, min_value=0.0, value=0.0, step=0.1)
-            phosphorous = st.number_input(phosphorous_label, min_value=0.0, value=0.0, step=0.1)
-            submit_label = translate_text("Recommend Fertilizer 🌟", st.session_state.language)
-            submitted = st.form_submit_button(submit_label)
+                crop_type = st.selectbox("🌾 Crop Type", ["Maize", "Sugarcane", "Cotton", "Tobacco", "Paddy", "Barley", "Wheat", "Millets", "Oil seeds", "Pulses", "Ground Nuts"])
+            nitrogen = st.number_input("🌿 Nitrogen (N) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            potassium = st.number_input("🌿 Potassium (K) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            phosphorous = st.number_input("🌱 Phosphorous (P) (kg/ha)", min_value=0.0, value=0.0, step=0.1)
+            submitted = st.form_submit_button("Recommend Fertilizer 🌟")
         if submitted:
             if fertilizer_model and label_encoder_soil and label_encoder_crop:
                 if all([temperature >= 0, humidity >= 0, moisture >= 0, nitrogen >= 0, potassium >= 0, phosphorous >= 0]):
                     soil_encoded = label_encoder_soil.transform([soil_type])[0]
                     crop_encoded = label_encoder_crop.transform([crop_type])[0]
                     features = np.array([[temperature, humidity, moisture, soil_encoded, crop_encoded, nitrogen, potassium, phosphorous]])
-                    with st.spinner(translate_text("🔍 Analyzing...", st.session_state.language)):
+                    with st.spinner("🔍 Analyzing..."):
                         prediction = fertilizer_model.predict(features)
-                    success_msg = translate_text("🌟 Recommended Fertilizer: **{}**", st.session_state.language).format(prediction[0])
-                    st.success(success_msg)
+                    st.success(f"🌟 Recommended Fertilizer: **{prediction[0]}**")
                 else:
-                    error_msg = translate_text("🚫 Please fill in all fields with valid values.", st.session_state.language)
-                    st.error(error_msg)
+                    st.error("🚫 Please fill in all fields with valid values.")
             else:
-                error_msg = translate_text("🚫 Fertilizer recommendation model or label encoders failed to load. Please ensure the model files exist.", st.session_state.language)
-                st.error(error_msg)
+                st.error("🚫 Fertilizer recommendation model or label encoders failed to load. Please ensure the model files exist.")
 
     elif selected_menu == "Smart Farming Guidance":
-        guidance_title = translate_text("📚 Smart Farming Guidance", st.session_state.language)
-        st.subheader(guidance_title)
-        guidance_subtitle = translate_text("Enter Farming Details Below 🎉", st.session_state.language)
-        st.markdown(f"<p style='text-align: center; color: #4CAF50;'>{guidance_subtitle}</p>", unsafe_allow_html=True)
+        st.subheader("📚 Smart Farming Guidance")
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Enter Farming Details Below 🎉</p>", unsafe_allow_html=True)
         with st.form("guidance_form"):
-            crop_label = translate_text("🌾 Enter Crop Name", st.session_state.language)
-            country_label = translate_text("🌍 Enter Country Name", st.session_state.language)
-            crop = st.text_input(crop_label, help=translate_text("e.g., Wheat", st.session_state.language))
-            country = st.text_input(country_label, help=translate_text("e.g., India", st.session_state.language))
-            submit_label = translate_text("Get Guidance 🚀", st.session_state.language)
-            submitted = st.form_submit_button(submit_label)
+            crop = st.text_input("🌾 Enter Crop Name", help="e.g., Wheat")
+            country = st.text_input("🌍 Enter Country Name", help="e.g., India")
+            submitted = st.form_submit_button("Get Guidance 🚀")
         if submitted:
             if crop and country:
-                with st.spinner(translate_text("🔍 Fetching guidance...", st.session_state.language)):
+                with st.spinner("🔍 Fetching guidance..."):
                     guidance = get_smart_farming_info(crop, country)
-                    translated_guidance = translate_text(guidance, st.session_state.language)
-                st.markdown(f"<div style='text-align: center;'>{translated_guidance}</div>", unsafe_allow_html=True)
-                caption = translate_text("🌿 {}", st.session_state.language).format(crop.capitalize())
-                st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=caption, use_container_width=True)
+                st.markdown(f"<div style='text-align: center;'>{guidance}</div>", unsafe_allow_html=True)
+                st.image(f"https://source.unsplash.com/600x400/?{crop}", caption=f"🌿 {crop.capitalize()}", use_container_width=True)
             else:
-                error_msg = translate_text("🚫 Please fill in all fields.", st.session_state.language)
-                st.error(error_msg)
+                st.error("🚫 Please fill in all fields.")
