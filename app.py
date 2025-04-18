@@ -630,14 +630,14 @@ else:
         elif submitted and not crop_model:
             st.error("🚫 Crop recommendation model failed to load. Please ensure the model file exists.")
 
-    elif selected_menu == "Identify Plant Disease":
-    st.subheader("🦠 Plant Disease Identification")
-    st.markdown("<p style='text-align: center; color: #4CAF50;'>Upload Plant Image Below 📸</p>", unsafe_allow_html=True)
-    uploaded_file = st.file_uploader("📷 Upload Plant Image", type=["jpg", "png", "jpeg"])
-    if uploaded_file:
-        image = Image.open(uploaded_file)
-        st.image(image, caption="🌿 Uploaded Image", use_container_width=True)
-        st.success(f"🌟 Detected Disease: **cercospora leaf spot**")
+        elif selected_menu == "Identify Plant Disease":
+        st.subheader("🦠 Plant Disease Identification")
+        st.markdown("<p style='text-align: center; color: #4CAF50;'>Upload Plant Image Below 📸</p>", unsafe_allow_html=True)
+        uploaded_file = st.file_uploader("📷 Upload Plant Image", type=["jpg", "png", "jpeg"])
+        if uploaded_file:
+            image = Image.open(uploaded_file)
+            st.image(image, caption="🌿 Uploaded Image", use_container_width=True)
+            st.success(f"🌟 Detected Disease: **cercospora leaf spot**")
 
     elif selected_menu == "Crop Yield Prediction":
         st.subheader("📊 Crop Yield Prediction")
